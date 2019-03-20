@@ -104,6 +104,11 @@ class Upload extends Component {
       e.preventDefault();
       var self = this;
       var form = e.target;
+      var file_lang = "";
+
+      if (e.target.mediafilelang){
+        file_lang = e.target.mediafilelang.value;
+      }
 
       if (this.state.file !== '') {
 
@@ -126,13 +131,19 @@ class Upload extends Component {
         let file_ext = this.state.file.name.split('.').pop().toLowerCase();
         let content_type = content_map[file_ext];
 
-
         let uuid = uuidv4();
         let filename = ['media',uuid,'content',[this.state.file.name.split('.').slice(0,-1).join('.'),file_ext].join('.')].join("/");
 
+        if (file_lang != ""){
+          filename = ['media',uuid,'content',[this.state.file.name.split('.').slice(0,-1).join('.'),file_lang,file_ext].join('.')].join("/");
+        }
+        
+
+
         Storage.put(filename, this.state.file, {
             level: 'private',
-            contentType: content_type
+            contentType: content_type,
+            
         })
             .then (function(result) {
             	//console.log(result);
@@ -255,6 +266,14 @@ class Upload extends Component {
                     <Button type="submit" disabled={this.state.file === ''}>Upload Media</Button>
                       <FormGroup className="mr-sm-2 ml-sm-4">
                         <Input name="mediafilename" type="text" disabled placeholder={this.state.file.name} />
+                        {(media_type === "video" || media_type === "video") && 
+                        <select name="mediafilelang" type="select" class="form-control">
+                          <option value="en-US" selected >American English</option>
+                          <option value="en-GB">British English</option>
+                          <option value="es-ES">Spanish</option>
+                          <option value="es-AR">Latin Spanish</option>
+                        </select>
+                        }
                       </FormGroup>
                   </div>
                   <FormText color="muted">
