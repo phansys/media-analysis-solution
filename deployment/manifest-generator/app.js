@@ -81,7 +81,9 @@ for (let i = 0; i < _filelist.length; i++) {
 };
 
 fs.writeFile(args.output, JSON.stringify(_manifest, null, 4), function(err, result) {
-     if(err) console.log('error', err);
+    if (err) {
+        console.error(err);
+    }
 });
 
 console.log(`Manifest file ${args.output} generated.`);
