@@ -112,7 +112,13 @@ module.exports.respond = function(event, cb) {
         /**
          * Initial state, merge default ai_options.<type> with the payload
          */
-       if (event.lambda === undefined) {
+        let language_code = 'en-US'
+        
+        if (event.file_name) {
+            language_code = event.file_name.split(".").slice(0,-1).pop();
+        }
+
+        if (event.lambda === undefined) {
             let merged = Object.assign({
                 ai_options: {
                     labels: true,
@@ -123,7 +129,7 @@ module.exports.respond = function(event, cb) {
                     transcript: true,
                     entities: true,
                     phrases: true,
-                    language_code: 'en-US',
+                    language_code: language_code,
                 },
             }, event);
 
