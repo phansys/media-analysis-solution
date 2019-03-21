@@ -270,8 +270,7 @@ class Upload extends Component {
                         <select name="mediafilelang" type="select" class="form-control">
                           <option value="en-US" selected >American English</option>
                           <option value="en-GB">British English</option>
-                          <option value="es-ES">Spanish</option>
-                          <option value="es-AR">Latin Spanish</option>
+                          <option value="es-US">Spanish</option>
                         </select>
                         }
                       </FormGroup>
