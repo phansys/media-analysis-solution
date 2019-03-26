@@ -12,15 +12,15 @@ Parameters:
 Mappings:
     RegionMap:
         us-east-1:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
         us-east-2:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
         us-west-2:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
         eu-west-1:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
         ap-southeast-2:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
 
     SizeMap:
         Small:
