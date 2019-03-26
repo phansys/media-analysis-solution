@@ -33,24 +33,4 @@ module.exports.respond = function(event, cb) {
             }
         });
     }
-    if (event.lambda.function_name == 'get_status') {
-        _translate.getStatus(event, function(err, data) {
-            if (err) {
-                return cb(err, null);
-            }
-            else {
-                return cb(null, data);
-            }
-        });
-    }
-    if (event.lambda.function_name == 'get_results') {
-        _translate.getResults(event, function(err, data) {
-            if (err) {
-                return cb(err, null);
-            }
-            else {
-                return cb(null, data);
-            }
-        });
-    }
 };
