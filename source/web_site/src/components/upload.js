@@ -181,7 +181,7 @@ class Upload extends Component {
     let reader = new FileReader();
     let file = e.target.files[0];
     if (file) {
-      if (file.size <= 100000000) {
+      if (file.size <= 200000000) {
           let file_type = file.type.split('/')[0];
           reader.onloadend = () => {
             this.setState({
@@ -199,7 +199,7 @@ class Upload extends Component {
           "media_file": preview,
           "media_type": "image",
           'error': true,
-          'error_msg': 'File previews are limited to 100MB or less for this demo page. Please upload file direclty to media analysis S3 bucket using the following naming convention: private/<Cognito Identity ID>/media/<UUID v4>/content/filename.ext'
+          'error_msg': 'File previews are limited to 200MB or less for this demo page. Please upload file direclty to media analysis S3 bucket using the following naming convention: private/<Cognito Identity ID>/media/<UUID v4>/content/filename.ext'
         });
       }
     }
