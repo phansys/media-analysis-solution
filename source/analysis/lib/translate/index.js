@@ -17,20 +17,16 @@
 
 'use strict';
 
-let AWS = require('aws-sdk');
 let Translate = require('./translate.js');
 
 module.exports.respond = function(event, cb) {
     let _translate = new Translate();
-
-    if (event.lambda.function_name == 'start_translation') {
-        _translate.startTranslation(event, function(err, data) {
-            if (err) {
-                return cb(err, null);
-            }
-            else {
-                return cb(null, data);
-            }
-        });
-    }
+    _translate.startTranslation(event, function(err, data) {
+        if (err) {
+            return cb(err, null);
+        }
+        else {
+            return cb(null, data);
+        }
+    });
 };
