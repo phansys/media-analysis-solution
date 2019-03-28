@@ -48,7 +48,7 @@ let translate = (function () {
     let key = event_info.results.transcript.key;
     let language_code = (event_info.ai_options || {}).language_code.split('-')[0] || 'en';
     let source_text = (event_info.ai_options || {}).source_text || '';
-    let target_language_code = (event_info.ai_options || {}).target_language_code.split('-')[0] || 'es';
+    let target_language_code = ((event_info.ai_options || {}).target_language_code || 'es').split('-')[0];
 
     console.log('Key:: ', key, 'language_code:: ', language_code);
 

@@ -371,6 +371,12 @@ Resources:
                               "Result": {
                                 "service_name": "translate"
                               },
+                              "ResultPath": "$.lambda",
+                              "Next": "Perform Translation"
+                            },
+                            "Perform Translation": {
+                              "Type": "Task",
+                              "Resource": "arn:aws:lambda:us-east-1:456816643984:function:MediaAnalyzer301-MediaAnalysisFunction-183GHVX6Z9JZB",
                               "InputPath": "$",
                               "ResultPath": "$.translate",
                               "Next": "Get Comprehension"
