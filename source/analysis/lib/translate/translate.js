@@ -18,7 +18,6 @@
 'use strict';
 let AWS = require('aws-sdk');
 let upload = require('../upload');
-let request = require('request');
 
 const s3Bucket = process.env.S3_BUCKET;
 
@@ -51,63 +50,83 @@ let translate = (function () {
     let source_text = (event_info.ai_options || {}).source_text || '';
     let target_language_code = (event_info.ai_options || {}).target_language_code || 'es-US';
 
-    let source_file_uri = '';
-    if ('us-east-1' === process.env.AWS_REGION) {
-      source_file_uri = ['https://s3.amazonaws.com', s3Bucket, '/', key].join('');
-    } else {
-      source_file_uri = ['https://s3-', process.env.AWS_REGION, '.amazonaws.com', '/', s3Bucket, '/', key].join('');
+    console.log('Key:: ', key, 'language_code:: ', language_code);
+
+    let transcript_params = {
+        Bucket: s3Bucket,
+        Key: key
     }
-    console.log('File:: ', source_file_uri, 'language_code:: ', language_code);
 
-    function getFileContents(source_file_uri) {
-      return new Promise(function (resolve, reject) {
-        request(source_file_uri, function (err, data, body) {
-          if (err) {
-            reject(err);
+    getTranscript(transcript_params, function (err, data) {
+      if (err) {
+        return cb(err, null);
+      } else {
+        if (JSON.parse(data.Body.toString('utf-8')).status == 'MP4 FAILED') {
+          source_text = '';
+        } else {
+          source_text = JSON.parse(data.Body.toString('utf-8')).results.transcripts[0].transcript;
+        }
 
-            return cb(err, null);
+        if ('' === source_text) {
+          console.log('No words available for translation');
+        } else {
+          let translate_params = {
+            SourceLanguageCode: language_code,
+            TargetLanguageCode: target_language_code,
+            Text: source_text
           }
 
-          resolve(body);
-        });
-      });
-    }
+          getTranslatedText(translate_params, function (err, data) {
+            if (err) {
+              return cb(err, null);
+            } else {
+              console.log(data.TranslatedText);
 
-    getFileContents(source_file_uri).then(function (body) {
-      source_text = body;
+              let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'translated_text_' + data.TargetLanguageCode + '.json'].join('/');
+
+              let s3_params = {
+                Bucket: s3Bucket,
+                Key: text_key,
+                Body: data.TranslatedText,
+                ContentType: 'application/json'
+              };
+
+              upload.respond(s3_params, function (err, response) {
+                if (err) {
+                  return cb(err, null);
+                } else {
+                  let text_response = {'key': text_key, 'text': data.TranslatedText, 'status': "COMPLETE"};
+                  return cb(null, text_response);
+                }
+              });
+            }
+          });
+
+          return cb(null, source_text);
+        }
+      }
     });
+  };
 
-    let params = {
-      SourceLanguageCode: language_code,
-      TargetLanguageCode: target_language_code,
-      Text: source_text
-    };
+  let getTranscript = function (params, cb) {
+    let s3 = new AWS.S3();
+    s3.getObject(params, function (err, data) {
+      if (err) {
+        console.log(err);
+        return cb(err, null);
+      } else {
+        return cb(null, data);
+      }
+    });
+  };
 
+  let getTranslatedText = function (params, cb) {
     let translate = new AWS.Translate();
     translate.translateText(params, function (err, data) {
       if (err) {
         return cb(err, null);
       } else {
-
-        var translatedText = data.TranslatedText;
-
-        let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'translated_text_' + params.TargetLanguageCode + '.json'].join('/');
-
-        let s3_params = {
-          Bucket: s3Bucket,
-          Key: text_key,
-          Body: JSON.stringify(data),
-          ContentType: 'application/json'
-        };
-
-        upload.respond(s3_params, function (err, response) {
-          if (err) {
-            return cb(err, null);
-          } else {
-            let text_response = {'key': text_key, 'text': translatedText, 'status': "COMPLETE"};
-            return cb(null, text_response);
-          }
-        });
+        return cb(null, data);
       }
     });
   };
