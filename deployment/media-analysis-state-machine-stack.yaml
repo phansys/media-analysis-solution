@@ -367,8 +367,10 @@ Resources:
                               "Cause": "Transcription failed"
                             },
                             "Start Translation": {
-                              "Type": "Task",
-                              "Resource": "${lambdaArn}",
+                              "Type": "Pass",
+                              "Result": {
+                                "service_name": "translate"
+                              },
                               "InputPath": "$",
                               "ResultPath": "$.translate",
                               "Next": "Get Comprehension"
