@@ -423,7 +423,6 @@ Resources:
                           - "translate:TranslateText"
                         Resource: "*"
                       -
-                      -
                         Effect: "Allow"
                         Action:
                           - "s3:GetObject"
