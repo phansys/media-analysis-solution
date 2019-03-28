@@ -59,8 +59,22 @@ let translate = (function () {
     }
     console.log('File:: ', source_file_uri, 'language_code:: ', language_code);
 
-    source_text = request(source_file_uri, function (err, data, body) {
-      return body;
+    function getFileContents(source_file_uri) {
+      return new Promise(function (resolve, reject) {
+        request(source_file_uri, function (err, data, body) {
+          if (err) {
+            reject(err);
+
+            return cb(err, null);
+          }
+
+          resolve(body);
+        });
+      });
+    }
+
+    getFileContents(source_file_uri).then(function (body) {
+      source_text = body;
     });
 
     let params = {
