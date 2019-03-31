@@ -76,6 +76,7 @@ let status = (function() {
                                       'state_machine_status': execution_status,
                                       'analysis': {
                                           'transcript': 'IN PROGRESS',
+                                          'translate': 'IN PROGRESS',
                                           'entities': 'IN PROGRESS',
                                           'phrases': 'IN PROGRESS'
                                       }
@@ -84,6 +85,9 @@ let status = (function() {
                                       if ('stateExitedEventDetails' in response[i]) {
                                           if (response[i].stateExitedEventDetails.name == 'Get Results') {
                                               audio_status_out.analysis.transcript = JSON.parse(response[i].stateExitedEventDetails.output).results.transcript.status;
+                                          }
+                                          else if (response[i].stateExitedEventDetails.name == 'Get Phrases') {
+                                              audio_status_out.analysis.translate = JSON.parse(response[i].stateExitedEventDetails.output).results.translate.status;
                                           }
                                           else if (response[i].stateExitedEventDetails.name == 'Get Phrases') {
                                               audio_status_out.analysis.phrases = JSON.parse(response[i].stateExitedEventDetails.output).results.phrases.status;
@@ -105,6 +109,7 @@ let status = (function() {
                                           'persons': 'IN PROGRESS',
                                           'face_matches': 'IN PROGRESS',
                                           'transcript': 'IN PROGRESS',
+                                          'translate': 'IN PROGRESS',
                                           'entities': 'IN PROGRESS',
                                           'phrases': 'IN PROGRESS'
                                       }
@@ -131,6 +136,9 @@ let status = (function() {
                                           }
                                           else if (response[i].stateExitedEventDetails.name == 'Get Results') {
                                               mp4_status_out.analysis.transcript = JSON.parse(response[i].stateExitedEventDetails.output).results.transcript.status;
+                                          }
+                                          else if (response[i].stateExitedEventDetails.name == 'Perform Translation') {
+                                              mp4_status_out.analysis.translate = JSON.parse(response[i].stateExitedEventDetails.output).results.translate.status;
                                           }
                                           else if (response[i].stateExitedEventDetails.name == 'Get Phrases') {
                                               mp4_status_out.analysis.phrases = JSON.parse(response[i].stateExitedEventDetails.output).results.phrases.status;

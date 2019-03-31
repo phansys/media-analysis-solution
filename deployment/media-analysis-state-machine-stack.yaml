@@ -358,13 +358,28 @@ Resources:
                             "Get Results": {
                               "Type": "Task",
                               "Resource": "${lambdaArn}",
-                              "Next": "Get Comprehension",
+                              "Next": "Start Translation",
                               "InputPath": "$",
                               "ResultPath": "$.results.transcript"
                             },
                             "Job Failed": {
                               "Type": "Fail",
                               "Cause": "Transcription failed"
+                            },
+                            "Start Translation": {
+                              "Type": "Pass",
+                              "Result": {
+                                "service_name": "translate"
+                              },
+                              "ResultPath": "$.lambda",
+                              "Next": "Perform Translation"
+                            },
+                            "Perform Translation": {
+                              "Type": "Task",
+                              "Resource": "${lambdaArn}",
+                              "InputPath": "$",
+                              "ResultPath": "$.translate",
+                              "Next": "Get Comprehension"
                             },
                             "Get Comprehension": {
                               "Type": "Parallel",

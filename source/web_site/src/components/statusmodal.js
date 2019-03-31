@@ -23,6 +23,8 @@ class StatusModal extends Component {
           persons_value: "50",
           transcript_color: "warning",
           transcript_value: "50",
+          translate_color: "warning",
+          translate_value: "50",
           entities_color: "warning",
           entities_value: "50",
           phrases_color: "warning",
@@ -97,6 +99,14 @@ class StatusModal extends Component {
                           self.setState({
                             transcript_color: "success",
                             transcript_value: "100"
+                          });
+                      }
+                  }
+                  if ("translate" in response.analysis) {
+                      if (response.analysis.translate === "COMPLETE") {
+                          self.setState({
+                            translate_color: "success",
+                            translate_value: "100"
                           });
                       }
                   }
@@ -185,6 +195,8 @@ class StatusModal extends Component {
                 <hr className="my-2" />
                 <div>Transcript</div>
                 <Progress animated color={this.state.transcript_color} value={this.state.transcript_value} />
+                <div>Translation</div>
+                <Progress animated color={this.state.translate_color} value={this.state.translate_value} />
                 <div>Key Entities</div>
                 <Progress animated color={this.state.entities_color} value={this.state.entities_value} />
                 <div>Key Phrases</div>
@@ -222,6 +234,8 @@ class StatusModal extends Component {
                 <Progress animated color={this.state.celebs_color} value={this.state.celebs_value} />
                 <div>Transcript</div>
                 <Progress animated color={this.state.transcript_color} value={this.state.transcript_value} />
+                <div>Translation</div>
+                <Progress animated color={this.state.translate_color} value={this.state.translate_value} />
                 <div>Key Entities</div>
                 <Progress animated color={this.state.entities_color} value={this.state.entities_value} />
                 <div>Key Phrases</div>

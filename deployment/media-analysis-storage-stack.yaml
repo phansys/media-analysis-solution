@@ -12,19 +12,19 @@ Parameters:
 Mappings:
     RegionMap:
         us-east-1:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
         us-east-2:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
         us-west-2:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
         eu-west-1:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
         ap-southeast-2:
-            InstanceType: "m4.large.elasticsearch"
+            InstanceType: "t2.small.elasticsearch"
 
     SizeMap:
         Small:
-            InstanceCount: 2
+            InstanceCount: 1
             VolumeSize: 25
             MasterSize: "t2.small.elasticsearch"
         Medium:
@@ -46,7 +46,7 @@ Resources:
                 DedicatedMasterCount: 3
                 DedicatedMasterType: !FindInMap ["SizeMap", !Ref Size, "MasterSize"]
                 InstanceCount: !FindInMap ["SizeMap", !Ref Size, "InstanceCount"]
-                ZoneAwarenessEnabled: true
+                ZoneAwarenessEnabled: false
                 InstanceType: !FindInMap ["RegionMap", Ref: "AWS::Region", "InstanceType"]
             ElasticsearchVersion: 6.0
             EBSOptions:
