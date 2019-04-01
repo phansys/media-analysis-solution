@@ -47,6 +47,7 @@ class Result extends Component {
       this.getFaceMatches = this.getFaceMatches.bind(this);
       this.getPersons = this.getPersons.bind(this);
       this.getTranscript = this.getTranscript.bind(this);
+      this.getTranslate = this.getTranslate.bind(this);
       this.getEntities = this.getEntities.bind(this);
       this.getPhrases = this.getPhrases.bind(this);
       this.getCaptions = this.getCaptions.bind(this);
@@ -96,12 +97,14 @@ class Result extends Component {
             self.getFaceMatches();
             self.getPersons();
             self.getTranscript();
+            self.getTranslate();
             self.getEntities();
             self.getPhrases();
             self.getCaptions();
         }
         else if ( response.details.file_type === 'mp3' || response.details.file_type === 'wav' || response.details.file_type === 'flac' || response.details.file_type === 'wave') {
             self.getTranscript();
+            self.getTranslate();
             self.getEntities();
             self.getPhrases();
             self.getCaptions();
@@ -483,6 +486,21 @@ class Result extends Component {
       .then(function(data) {
           self.setState({
               "transcript": data.Transcripts[0].Transcript
+          });
+      })
+      .catch(function(err) {
+          //console.log(err);
+      });
+  }
+
+
+  getTranslate() {
+    var self = this;
+    var translate_path = ['/lookup',this.props.match.params.objectid,'translate'].join('/');
+    API.get('MediaAnalysisApi', translate_path, {})
+      .then(function(data) {
+          self.setState({
+              "translate": data.Translate[0].Translate
           });
       })
       .catch(function(err) {

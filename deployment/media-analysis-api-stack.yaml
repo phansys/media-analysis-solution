@@ -47,6 +47,7 @@ Resources:
                     S3_BUCKET: !Ref S3Bucket
                     STATE_MACHINE: !Ref StateMachineArn
                     SEARCH_RESULT_LIMIT: '30'
+                    TRANSLATE_LANGUAJE: "[ 'es' ]"
 
     MediaAnalysisApiRole:
         Type: AWS::IAM::Role

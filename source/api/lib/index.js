@@ -106,6 +106,9 @@ module.exports.respond = function(event, cb) {
         else if (request.startsWith('transcript')) {
             lookup_type = 'transcript';
         }
+        else if (request.startsWith('translate')) {
+            lookup_type = 'translate';
+        }        
         else if (request.startsWith('captions')) {
             lookup_type = 'captions';
         }
