@@ -137,6 +137,7 @@ class AudioResults extends Component {
     var file_name = this.props.filename;
     var media_source = this.props.mediafile;
     var transcript = this.props.transcript;
+    var translate = this.props.translate;
     var entities = this.props.entities;
     var phrases = this.props.phrases;
 
@@ -177,6 +178,9 @@ class AudioResults extends Component {
                       <NavLink active={this.state.activeTab === "transcript"} onClick={() => { this.tabToggle('transcript'); }}>Transcript</NavLink>
                     </NavItem>
                     <NavItem>
+                      <NavLink active={this.state.activeTab === "translate"} onClick={() => { this.tabToggle('translate'); }}>Translate</NavLink>
+                    </NavItem>
+                    <NavItem>
                       <NavLink active={this.state.activeTab === "entities"} onClick={() => { this.tabToggle('entities'); }}>Entities</NavLink>
                     </NavItem>
                     <NavItem>
@@ -195,6 +199,13 @@ class AudioResults extends Component {
                       <Row>
                         <Col align="center">
                           {entities}
+                        </Col>
+                      </Row>
+                    </TabPane>
+                    <TabPane tabId="translate">
+                      <Row>
+                        <Col align="center">
+                          {translate}
                         </Col>
                       </Row>
                     </TabPane>

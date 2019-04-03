@@ -22,6 +22,7 @@ class Result extends Component {
         entity_list: [],
         phrase_list: [],
         transcript: '',
+        translate: '',
         persons: [],
         file_type: 'jpg', //needed
         celeb_boxes: [],
@@ -499,12 +500,16 @@ class Result extends Component {
     var translate_path = ['/lookup',this.props.match.params.objectid,'translate'].join('/');
     API.get('MediaAnalysisApi', translate_path, {})
       .then(function(data) {
+          let translate = '';
+          for (let lang in data.Translates) {
+            translate += lang + ': ' + data.Translates[lang].Translate + "\n\n";
+          }
           self.setState({
-              "translate": data.Translate[0].Translate
+              "translate": translate
           });
       })
       .catch(function(err) {
-          //console.log(err);
+          console.error(err);
       });
   }
 
@@ -583,6 +588,7 @@ class Result extends Component {
 
         //let persons = this.state.persons;
         let transcript = this.state.transcript;
+        let translate = this.state.translate;
 
         if (this.state.file_type === 'png' || this.state.file_type === 'jpg' || this.state.file_type === 'jpeg') {
           return (
@@ -615,7 +621,7 @@ class Result extends Component {
                   <Progress animated color="warning" value="100" />
                 </ModalBody>
               </Modal>
-                <AudioResults mediafile={this.state.media_file} filename={this.state.filename} filetype={this.state.file_type} transcript={transcript} captions={this.state.captions} phrases={phrases} entities={entities}/>
+                <AudioResults mediafile={this.state.media_file} filename={this.state.filename} filetype={this.state.file_type} transcript={transcript} translate={translate} captions={this.state.captions} phrases={phrases} entities={entities}/>
             </div>
 
           );
@@ -633,7 +639,7 @@ class Result extends Component {
                   <Progress animated color="warning" value="100" />
                 </ModalBody>
               </Modal>
-              <VideoResults phrases={phrases} entities={entities} captions={this.state.captions} transcript={this.state.transcript} individualcelebs={this.state.video_indv_celebs} allfaces={this.state.face_video} attributes={this.state.att_list} celebvideo={this.state.celeb_video} mediafile={this.state.media_file} filename={this.state.filename} filetype={this.state.file_type} persons={this.state.persons} labels={labels} individualknownfaces={this.state.video_indv_known_faces} allknownfaces={this.state.known_face_video}/>
+              <VideoResults phrases={phrases} entities={entities} captions={this.state.captions} transcript={this.state.transcript} translate={translate} individualcelebs={this.state.video_indv_celebs} allfaces={this.state.face_video} attributes={this.state.att_list} celebvideo={this.state.celeb_video} mediafile={this.state.media_file} filename={this.state.filename} filetype={this.state.file_type} persons={this.state.persons} labels={labels} individualknownfaces={this.state.video_indv_known_faces} allknownfaces={this.state.known_face_video}/>
             </div>
           );
         }
