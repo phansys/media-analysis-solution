@@ -202,6 +202,7 @@ class VideoResults extends Component {
       var phrases = this.props.phrases;
       var entities = this.props.entities;
       var transcript = this.props.transcript;
+      var translate = this.props.translate;
 
 
 
@@ -280,6 +281,9 @@ class VideoResults extends Component {
                     <NavLink active={this.state.activeTab === "transcript"} onClick={() => { this.tabToggle('transcript'); }}>Transcript</NavLink>
                   </NavItem>
                   <NavItem>
+                    <NavLink active={this.state.activeTab === "translate"} onClick={() => { this.tabToggle('translate'); }}>Translate</NavLink>
+                  </NavItem>
+                  <NavItem>
                     <NavLink active={this.state.activeTab === "entities"} onClick={() => { this.tabToggle('entities'); }}>Entities</NavLink>
                   </NavItem>
                   <NavItem>
@@ -326,6 +330,13 @@ class VideoResults extends Component {
                     <Row>
                       <Col align="center">
                         {entities}
+                      </Col>
+                    </Row>
+                  </TabPane>
+                  <TabPane tabId="translate">
+                    <Row>
+                      <Col align="center">
+                        {translate}
                       </Col>
                     </Row>
                   </TabPane>

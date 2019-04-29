@@ -76,18 +76,26 @@ let translate = (function () {
             Text: source_text
           }
 
+          let translate_json = {
+            results: {
+              translations: {}
+            }
+          };
+
           getTranslatedText(translate_params, function (err, data) {
             if (err) {
               return cb(err, null);
             } else {
               console.log(data.TranslatedText);
 
-              let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'translated_text_' + data.TargetLanguageCode + '.json'].join('/');
+              translate_json.results.translations[data.TargetLanguageCode] = data.TranslatedText;
+
+              let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'translated_text.json'].join('/');
 
               let s3_params = {
                 Bucket: s3Bucket,
                 Key: text_key,
-                Body: data.TranslatedText,
+                Body: JSON.stringify(translate_json),
                 ContentType: 'application/json'
               };
 
@@ -95,14 +103,14 @@ let translate = (function () {
                 if (err) {
                   return cb(err, null);
                 } else {
-                  let text_response = {'key': text_key, 'text': data.TranslatedText, 'status': "COMPLETE"};
+                  let text_response = {'key': text_key, 'translate_json': translate_json, 'status': "COMPLETE"};
                   return cb(null, text_response);
                 }
               });
             }
-          });
 
-          return cb(null, source_text);
+            return cb(null, translate_json);
+          });
         }
       }
     });

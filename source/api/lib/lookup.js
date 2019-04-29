@@ -22,6 +22,7 @@ let AWS = require('aws-sdk');
 let creds = new AWS.EnvironmentCredentials('AWS');
 const s3Bucket = process.env.S3_BUCKET;
 const confidence_score = parseInt(process.env.CONFIDENCE_SCORE);
+const translate_language = process.env.TRANSLATE_LANGUAJE;
 
 /**
  * Constructs deatiled metadata object
@@ -541,6 +542,38 @@ let lookup = (function() {
                 return cb(null, transcript_out);
               }
           });
+      }
+      else if (lookup_type === 'translate') {
+
+//          translate_language.forEach( language => {
+
+              let file_name = 'translated_text.json';
+
+              let s3_params = {
+                Bucket: s3Bucket,
+                Key: ['private',owner_id,'media',object_id,'results',file_name].join('/')
+              };
+
+              retrieveData(s3_params, owner_id, object_id, file_name, page_num, function(err, data) {
+                  if (err) {
+                    console.error(err);
+                    return cb(err, null);
+                  }
+                  else {
+                    console.log('Building translate data output');
+                    let translate_data = JSON.parse(data.Body.toString('utf-8'));
+                    console.log(translate_data);
+
+                    let translate_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results',file_name].join('/')}, 'Translates':{}};
+                    console.log(translate_out);
+
+                    for (var lang in translate_data.results.translations) {
+                        translate_out.Translates[lang] = {'Translate':translate_data.results.translations[lang]};
+                    }
+                    return cb(null, translate_out);
+                  }
+              });
+//          });
       }
       else if (lookup_type == 'captions') {
 
