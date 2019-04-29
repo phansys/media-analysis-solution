@@ -1,6 +1,5 @@
 import React from 'react';
 import {FormGroup, Label, InputGroupAddon, InputGroup, Modal, Alert} from 'reactstrap';
-import UploadFormContainer from './UploadFormContainer';
 import UploadForm from './UploadForm';
 import previewImage from './../img/preview.png';
 import StatusModal from './statusmodal';
@@ -103,7 +102,7 @@ class UploadMedia extends React.Component {
           <StatusModal format={fileExt} objectid={uuid}/>
         </Modal>
       
-        <UploadFormContainer
+        <UploadForm
           acceptInput="image/png, image/jpeg, audio/mp3, audio/flac, audio/wav, video/quicktime, video/mp4"
           filename={file ? file.name : ''}
           mediaType={mediaType}
@@ -131,7 +130,7 @@ class UploadMedia extends React.Component {
               </FormGroup>
             )
           }
-        </UploadFormContainer>
+        </UploadForm>
       </div>
     );
   }

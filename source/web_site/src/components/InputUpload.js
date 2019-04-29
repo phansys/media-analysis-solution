@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Input, InputGroup, InputGroupAddon} from 'reactstrap';
 
+/**
+ * This component renders a input file
+ */
 class InputUpload extends React.Component {
   /**
    * @inheritdoc
@@ -12,6 +15,9 @@ class InputUpload extends React.Component {
     onChange: PropTypes.func,
   }
 
+  /**
+   * @inheritdoc
+   */
   constructor(props) {
     super(props);
 
@@ -20,6 +26,9 @@ class InputUpload extends React.Component {
     }
   }
 
+  /**
+   * @param {File} file
+   */
   fileReader = (file) => {
     return new Promise((resolve, reject) => {
       let reader = new FileReader();
@@ -29,6 +38,9 @@ class InputUpload extends React.Component {
     });
   }
 
+  /**
+   * @param {Proxy} inputData
+   */
   onInputChange = (inputData) => {
     inputData.preventDefault();
     let file = inputData.target.files[0];
