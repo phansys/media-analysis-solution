@@ -54,6 +54,9 @@ class App extends Component {
               </NavbarBrand>
               <Nav className="ml-auto">
                 <NavItem>
+                  <NavLink tag={Link} to="/upload" className="text-light">Upload</NavLink>
+                </NavItem>
+                <NavItem>
                   <NavLink tag={Link} to="/browse" className="text-light">Browse</NavLink>
                 </NavItem>
                 <NavItem>

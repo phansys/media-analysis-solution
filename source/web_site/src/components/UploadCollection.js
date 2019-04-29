@@ -1,11 +1,13 @@
 import React from 'react';
 import uuidv4 from 'uuid/v4';
 import {FormGroup, Label, InputGroupAddon, InputGroup, Input, FormText} from 'reactstrap';
-import UploadFormContainer from './UploadFormContainer';
 import UploadForm from './UploadForm';
 import previewImage from './../img/preview.png';
 
 class UploadCollection extends React.Component {
+  /**
+   * @inheritdoc
+   */
   constructor(props) {
     super(props);
 
@@ -46,6 +48,10 @@ class UploadCollection extends React.Component {
     return value;
   }
 
+  /**
+   * @param {Object} data
+   * @param {boolean} isSuccessSubmit
+   */
   fetchCallback = (data, isSuccessSubmit) => {
     if (isSuccessSubmit) {
       this.setState({
@@ -55,6 +61,10 @@ class UploadCollection extends React.Component {
     }
   }
 
+  /**
+   * @param {File} file
+   * @param {ProgressEvent} fileData
+   */
   onInputChange = ({file, fileData}) => {
     let update = {
       file: file,
@@ -64,11 +74,14 @@ class UploadCollection extends React.Component {
     this.setState({...update});
   }
 
+  /**
+   * @inheritdoc
+   */
   render() {
     const {fileData, name, file} = this.state;
 
     return (
-      <UploadFormContainer
+      <UploadForm
         acceptInput="image/png, image/jpeg"
         filename={file ? file.name : ''}
         mediaType="image"
@@ -91,7 +104,7 @@ class UploadCollection extends React.Component {
             Please provide a name for this face ('[a-zA-Z0-9_.-]+')
           </FormText>
         </FormGroup>
-      </UploadFormContainer>
+      </UploadForm>
     );
   }
 }
