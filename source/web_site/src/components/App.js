@@ -7,6 +7,8 @@ import Upload from './upload';
 import Browse from './browse';
 import Settings from './settings';
 import Result from './result';
+import nubityIcon from './../img/nubity-icon.png';
+import './../styles/navbar.css';
 declare var media_analysis_config;
 
 Amplify.configure({
@@ -46,11 +48,11 @@ class App extends Component {
         <Router>
           <div>
             <Navbar color="dark">
-              <NavbarBrand tag={Link} to="/home">Media Analysis Solution</NavbarBrand>
+              <NavbarBrand tag={Link} to="/home">
+                <img alt="Media Analysis Solution" src={nubityIcon} className="brand-image"  />
+                <span className="ml-2 text-white">Nubity media solution</span>
+              </NavbarBrand>
               <Nav className="ml-auto">
-                <NavItem color="white">
-                  <NavLink tag={Link} to="/upload" className="text-light">Upload</NavLink>
-                </NavItem>
                 <NavItem>
                   <NavLink tag={Link} to="/browse" className="text-light">Browse</NavLink>
                 </NavItem>
