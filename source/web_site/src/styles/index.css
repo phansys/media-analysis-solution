@@ -1,9 +1,23 @@
-body {
-  margin: 0;
-  padding: 2rem;
+.input-file {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
-html * {
-	font-family: AmazonEmberBold,Helvetica Neue Bold,Helvetica Neue,Helvetica,Arial,sans-serif !important;
+.pointer {
+  cursor: pointer;
+}
 
+.font-size--18 {
+  font-size: 18px;
+}
+
+.font-size--35 {
+  font-size: 35px;
 }
