@@ -82,14 +82,14 @@ class VideoResults extends Component {
               context.drawImage(video,0,0,canvas.width,canvas.height);
               if (self.state.captions) {
                   context.beginPath();
-                  context.fillStyle = "black";
-                  context.fillRect(0,0,canvas.width,60);
+                  context.fillStyle = "rgba(8, 8, 8, 0.65)";
+                  context.fillRect(0, canvas.height - 40, canvas.width, 25);
                   context.closePath();
                   if ((Math.ceil((video.currentTime*1000)/100)*100) in self.props.captions) {
                       context.beginPath();
-                      context.font = "30px Comic Sans MS";
+                      context.font = "17px Comic Sans MS";
                       context.fillStyle = "white";
-                      context.fillText(self.props.captions[Math.ceil((video.currentTime*1000)/100)*100].Captions,10,40)
+                      context.fillText(self.props.captions[Math.ceil((video.currentTime*1000)/100)*100].Captions,10,canvas.height - 22)
                       context.closePath();
                   }
               }
@@ -139,14 +139,14 @@ class VideoResults extends Component {
               context.drawImage(video,0,0,canvas.width,canvas.height);
               if (self.state.captions) {
                   context.beginPath();
-                  context.fillStyle = "black";
-                  context.fillRect(0,0,canvas.width,60);
+                  context.fillStyle = "rgba(8, 8, 8, 0.65)";
+                  context.fillRect(0, canvas.height - 40, canvas.width, 25);
                   context.closePath();
                   if ((Math.ceil((video.currentTime*1000)/100)*100) in self.props.captions) {
                       context.beginPath();
-                      context.font = "30px Comic Sans MS";
+                      context.font = "17px Comic Sans MS";
                       context.fillStyle = "white";
-                      context.fillText(self.props.captions[Math.ceil((video.currentTime*1000)/100)*100].Captions,10,40)
+                      context.fillText(self.props.captions[Math.ceil((video.currentTime*1000)/100)*100].Captions,10,canvas.height - 22)
                       context.closePath();
                   }
               }
