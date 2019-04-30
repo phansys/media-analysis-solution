@@ -61,11 +61,14 @@ let translate = (function () {
       if (err) {
         return cb(err, null);
       } else {
+        let transcriptResults;
         if (JSON.parse(data.Body.toString('utf-8')).status == 'MP4 FAILED') {
-          source_text = '';
+          transcriptResults = null;
         } else {
-          source_text = JSON.parse(data.Body.toString('utf-8')).results.transcripts[0].transcript;
+          transcriptResults = getPhrasesFromTranscript(JSON.parse(data.Body.toString('utf-8')));
         }
+
+        source_text = transcriptResults ? transcriptResults.transcripts[0].transcript : '';
 
         if ('' === source_text) {
           console.log('No words available for translation');
@@ -138,6 +141,53 @@ let translate = (function () {
       }
     });
   };
+
+  function getPhrasesFromTranscript(transcript) {
+    const items = transcript.results.items;
+
+    // set up some variables for the first pass
+    let phrase = {};
+    let phrases = [];
+    let nPhrase = true;
+    let x = 0;
+    let c = 0;
+
+    // print "==> Creating phrases from transcript..."
+
+    for (let item in items) {
+        // if it is a new phrase, then get the start_time of the first item
+        if (nPhrase) {
+            if ('pronunciation' === item.type) {
+                phrase.start_time = item.start_time;
+                nPhrase = false;
+            }
+            c += 1
+        } else {
+            // We need to determine if this pronunciation or puncuation here
+            // Punctuation doesn't contain timing information, so we'll want
+            // to set the end_time to whatever the last word in the phrase is.
+            // Since we are reading through each word sequentially, we'll set
+            // the end_time if it is a word
+            if ('pronunciation' === item.type) {
+                phrase.end_time = item.end_time;
+            }
+        }
+
+        // in either case, append the word to the phrase...
+        phrase.words.append(item.alternatives[0].content);
+        x += 1;
+
+        // now add the phrase to the phrases, generate a new phrase, etc.
+        if (10 === x) {
+            phrases.push(phrase);
+            phrase = {};
+            nPhrase = true;
+            x = 0;
+        }
+    }
+
+    return phrases;
+  }
 
   return translate;
 })();
