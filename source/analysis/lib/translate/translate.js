@@ -73,17 +73,20 @@ let translate = (function () {
         if ('' === source_text) {
           console.log('No words available for translation');
         } else {
+
+          let newTs = {
+            results: {
+              accountId: transcriptResults.accountId,
+              transcripts: [],
+              items: []
+            }
+          };
+          let newItem = {};
           let translate_params = {
             SourceLanguageCode: language_code,
             TargetLanguageCode: target_language_code,
             Text: source_text
           }
-
-          let translate_json = {
-            results: {
-              translations: {}
-            }
-          };
 
           getTranslatedText(translate_params, function (err, data) {
             if (err) {
@@ -91,28 +94,59 @@ let translate = (function () {
             } else {
               console.log(data.TranslatedText);
 
-              translate_json.results.translations[data.TargetLanguageCode] = data.TranslatedText;
+              let tsItem = {transcript: data.TranslatedText};
 
-              let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'translated_text.json'].join('/');
+              newTs.results.transcripts.push(tsItem);
 
-              let s3_params = {
-                Bucket: s3Bucket,
-                Key: text_key,
-                Body: JSON.stringify(translate_json),
-                ContentType: 'application/json'
-              };
-
-              upload.respond(s3_params, function (err, response) {
-                if (err) {
-                  return cb(err, null);
-                } else {
-                  let text_response = {'key': text_key, 'translate_json': translate_json, 'status': "COMPLETE"};
-                  return cb(null, text_response);
-                }
-              });
+              return cb(null, data.TranslatedText);
             }
+          });
 
-            return cb(null, translate_json);
+          for (let item in transcriptResults) {
+            translate_params.Text = item.words.join(' ');
+
+            getTranslatedText(translate_params, function (err, data) {
+              if (err) {
+                return cb(err, null);
+              } else {
+                console.log(data.TranslatedText);
+
+                newItem = {
+                  start_time: item.start_time,
+                  end_time: item.end_time,
+                  alternatives: [
+                    {
+                      confidence: 1,
+                      content: data.TranslatedText,
+                    }
+                  ],
+                  type: 'pronunciation'
+                };
+
+                newTs.results.items.push(newItem);
+
+                return cb(null, newItem);
+              }
+            });
+          }
+
+          let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'translated_text.json'].join('/');
+
+          // @todo: ensure `newTs` is available and populated before trying to upload to S3
+          let s3_params = {
+            Bucket: s3Bucket,
+            Key: text_key,
+            Body: JSON.stringify(newTs),
+            ContentType: 'application/json'
+          };
+
+          upload.respond(s3_params, function (err, response) {
+            if (err) {
+              return cb(err, null);
+            } else {
+              let text_response = {'key': text_key, 'translate_json': newTs, 'status': "COMPLETE"};
+              return cb(null, text_response);
+            }
           });
         }
       }
@@ -152,7 +186,7 @@ let translate = (function () {
     let x = 0;
     let c = 0;
 
-    // print "==> Creating phrases from transcript..."
+    console.log('Creating phrases from transcript...');
 
     for (let item in items) {
         // if it is a new phrase, then get the start_time of the first item
