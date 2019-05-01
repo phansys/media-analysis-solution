@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {FormGroup, Label, InputGroupAddon, InputGroup, Modal, Alert} from 'reactstrap';
 import UploadForm from './UploadForm';
 import previewImage from './../img/preview.png';
@@ -6,6 +7,14 @@ import StatusModal from './statusmodal';
 import uuidv4 from 'uuid/v4';
 
 class UploadMedia extends React.Component {
+  static propTypes = {
+    fetchCallback: PropTypes.func,
+  }
+
+  static defaultProps = {
+    fetchCallback: () => {},
+  }
+
   constructor(props) {
     super(props);
 
@@ -46,6 +55,7 @@ class UploadMedia extends React.Component {
 
   fetchCallback = (data, isSuccessSubmit) => {
     if (isSuccessSubmit) {
+      this.props.fetchCallback(isSuccessSubmit);
       this.setState({
         fileData: previewImage,
         file: null,
