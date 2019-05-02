@@ -16,6 +16,8 @@ class Browse extends Component {
 			searching: false,
 			noresults: false,
 			isOpenModal: false,
+			fileExt: null,
+			objectid: null,
 			page_count: 1,
 			result_count: 0
 		}
@@ -124,15 +126,22 @@ class Browse extends Component {
 
 	/**
 	 * @param {boolean} isSuccessSubmit
+	 * @param {boolean} data
+	 * @param {string} data.fileExt
+	 * @param {string} data.uuid
 	 */
-	fetchCallback = (isSuccessSubmit) => {
+	fetchCallback = (isSuccessSubmit, {fileExt, uuid} = {}) => {
 		if (isSuccessSubmit) {
-			this.setState({ isOpenModal: false });
+			this.setState({ isOpenModal: false, fileExt, uuid });
 		}
 	}
 
+	closeModalStatus = () => {
+		this.setState({fileExt: null, uuid: null});
+	}
+
 	render() {
-		const { isOpenModal } = this.state;
+		const { isOpenModal, fileExt, uuid } = this.state;
 		var media_cards = this.state.results.map((item, index) => {
 			return (
 				<Col md="4" className="py-2" key={index}>
@@ -186,6 +195,9 @@ class Browse extends Component {
 						</ModalBody>
 					</Modal>
 
+					<Modal isOpen={null !== uuid} toggle={this.closeModalStatus}>
+						<StatusModal format={fileExt} objectid={uuid}/>
+					</Modal>
 				</div>
 				<div className="justify-content-between" style={{ display: 'flex' }}>
 					<Form inline className="pt-2 pb-2" onSubmit={this.Search}>

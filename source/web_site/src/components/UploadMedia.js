@@ -55,7 +55,10 @@ class UploadMedia extends React.Component {
 
   fetchCallback = (data, isSuccessSubmit) => {
     if (isSuccessSubmit) {
-      this.props.fetchCallback(isSuccessSubmit);
+      const {fileExt, uuid} = this.state;
+
+      this.props.fetchCallback(isSuccessSubmit, {fileExt, uuid});
+
       this.setState({
         fileData: previewImage,
         file: null,
@@ -108,10 +111,6 @@ class UploadMedia extends React.Component {
     return (
       <div>
         <Alert name="error" color="danger" isOpen={showError} toggle={this.dismiss}>{errorMsg}</Alert>
-        <Modal isOpen={isOpenModal} toggle={this.toggle}>
-          <StatusModal format={fileExt} objectid={uuid}/>
-        </Modal>
-      
         <UploadForm
           acceptInput="image/png, image/jpeg, audio/mp3, audio/flac, audio/wav, video/quicktime, video/mp4"
           filename={file ? file.name : ''}
