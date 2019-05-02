@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Amplify, { Auth, Storage, API } from 'aws-amplify';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { NavbarBrand, Navbar, Nav, NavItem, NavLink } from 'reactstrap';
-import Home from './home';
 import Upload from './upload';
 import Browse from './browse';
 import Settings from './settings';
@@ -54,10 +53,10 @@ class App extends Component {
               </NavbarBrand>
               <Nav className="ml-auto">
                 <NavItem>
-                  <NavLink tag={Link} to="/upload" className="text-light">Upload</NavLink>
+                  <NavLink tag={Link} to="/" className="text-light">Media</NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} to="/browse" className="text-light">Browse</NavLink>
+                  <NavLink tag={Link} to="/collection" className="text-light">Collection</NavLink>
                 </NavItem>
                 <NavItem>
                   <NavLink tag={Link} to="/settings" className="text-light">Settings</NavLink>
@@ -66,10 +65,8 @@ class App extends Component {
             </Navbar>
             <hr />
             <Switch>
-                <Route exact path='/' component={Home} />
-                <Route path='/home' component={Home} />
-                <Route path='/upload' component={Upload} />
-                <Route path='/browse' component={Browse} />
+                <Route exact path='/' component={Browse} />
+                <Route path='/collection' component={Upload} />
                 <Route path='/settings' component={Settings} />
                 <Route path='/result/:objectid' component={Result} />
             </Switch>
