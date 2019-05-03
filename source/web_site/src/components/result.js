@@ -385,20 +385,19 @@ class Result extends Component {
     var captions_path = ['/lookup',this.props.match.params.objectid,'captions'].join('/');
     API.get('MediaAnalysisApi', captions_path, {})
       .then(function(data) {
-
         const video_captions = Object.keys(data.Captions).reduce((lastValue, lang) => {
-          const data = data.Captions[lang];
+          const languageCaptions = data.Captions[lang];
 
           var captionOfLang = {};
           var ts = 0;
-          for (var c in data) {
-            if (data[c].hasOwnProperty("Content")) {
-              for (ts = (Math.floor((data[c].Timestamp)/100)*100) - 200; ts <= (Math.floor((data[c].Timestamp)/100)*100) + 2000; ts += 100) {
+          for (var c in languageCaptions) {
+            if (languageCaptions[c].hasOwnProperty("Content")) {
+              for (ts = (Math.floor((languageCaptions[c].Timestamp)/100)*100) - 200; ts <= (Math.floor((languageCaptions[c].Timestamp)/100)*100) + 2000; ts += 100) {
                 if (captionOfLang.hasOwnProperty(ts)) {
-                  captionOfLang[ts].Captions += (" "+data[c].Content);
+                  captionOfLang[ts].Captions += (" "+languageCaptions[c].Content);
                 }
                 else {
-                  captionOfLang[ts] = {"Captions":data[c].Content};
+                  captionOfLang[ts] = {Captions :languageCaptions[c].Content};
                 }
               }
             }
@@ -560,9 +559,9 @@ class Result extends Component {
 
     if (this.state) {
         //var self = this;
-        var labels = this.state.label_list.map(label => {
+        var labels = this.state.label_list.map((label, index) => {
             return(
-              <div style={{"display":"inline-block"}}>
+              <div style={{"display":"inline-block"}} key={index}>
                 <Button id={label.Id.replace(/\s+/g, '-').toLowerCase()} color="secondary" className="ml-1 mr-1 mb-1 mt-1">{label.Name}</Button>
                 <UncontrolledTooltip placement="top" target={label.Id.replace(/\s+/g, '-').toLowerCase()}>
                   {label.Confidence}
@@ -571,9 +570,9 @@ class Result extends Component {
             )
         });
 
-        var phrases = this.state.phrase_list.map(phrase => {
+        var phrases = this.state.phrase_list.map((phrase, index) => {
             return(
-              <div style={{"display":"inline-block"}}>
+              <div style={{"display":"inline-block"}} key={index}>
                 <Button id={phrase.Id.replace(/\s+/g, '-').toLowerCase()} color="secondary" className="ml-1 mr-1 mb-1 mt-1">{phrase.Name}</Button>
                 <UncontrolledTooltip placement="top" target={phrase.Id.replace(/\s+/g, '-').toLowerCase()}>
                   {phrase.Confidence.toFixed(3)}
@@ -582,9 +581,9 @@ class Result extends Component {
             )
         });
 
-        var entities = this.state.entity_list.map(entity => {
+        var entities = this.state.entity_list.map((entity, index) => {
             return(
-              <div style={{"display":"inline-block"}}>
+              <div style={{"display":"inline-block"}} key={index}>
                 <Button id={entity.Id.replace(/\s+/g, '-').toLowerCase()} color="secondary" className="ml-1 mr-1 mb-1 mt-1">{entity.Name}</Button>
                 <UncontrolledTooltip placement="top" target={entity.Id.replace(/\s+/g, '-').toLowerCase()}>
                   {entity.Confidence.toFixed(3)}

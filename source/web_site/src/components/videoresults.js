@@ -217,17 +217,25 @@ class VideoResults extends Component {
     var transcript = this.props.transcript;
     var translate = this.props.translate;
 
-    var atts = this.props.attributes.map(att => {
-      return (<Button color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: att.Name, boxes: att.Impressions }); }}>{att.Name}</Button>)
+    var atts = this.props.attributes.map((att, index) => {
+      return (<Button key={index} color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: att.Name, boxes: att.Impressions }); }}>{att.Name}</Button>)
     });
 
-    var celebs = this.props.individualcelebs.map(celeb => {
-      return (<Button color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: celeb.Name, boxes: celeb.Impressions }); }}>{celeb.Name}</Button>)
+    var celebs = this.props.individualcelebs.map((celeb, index) => {
+      return (<Button key={index} color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: celeb.Name, boxes: celeb.Impressions }); }}>{celeb.Name}</Button>)
     });
 
-    var face_matches = this.props.individualknownfaces.map(face => {
-      return (<Button color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: face.Name, boxes: face.Impressions }); }}>{face.Name}</Button>)
+    var face_matches = this.props.individualknownfaces.map((face, index) => {
+      return (<Button key={index} color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: face.Name, boxes: face.Impressions }); }}>{face.Name}</Button>)
     });
+
+    const codeCaptions = Object.keys(this.props.captions).reduce((lastValue, lang) => {
+      if (0 < Object.keys(this.props.captions[lang]).length) {
+        lastValue = [...lastValue, lang];
+      }
+
+      return lastValue;
+    }, []);
 
     return (
       <Container>
@@ -264,12 +272,36 @@ class VideoResults extends Component {
               <hr className="my-2" />
             </div>
             <div align="center">
-              <Button className="mr-2 my-2" color="info" active={'en' === this.state.captions} onClick={() => { this.setCaption('en'); }}>English</Button>
-              <Button className="mr-2 my-2" color="info" active={'es' === this.state.captions} onClick={() => { this.setCaption('es'); }}>Spanish</Button>
-              <Button className="mr-2 my-2" color="info" active={'fl' === this.state.captions} onClick={() => { this.setCaption('fl'); }}>Frances</Button>
-              <Button className="mr-2 my-2" color="info" active={'zh' === this.state.captions} onClick={() => { this.setCaption('zh'); }}>Chinese</Button>
-              <Button className="mr-2 my-2" color="info" active={'tk' === this.state.captions} onClick={() => { this.setCaption('tk'); }}>Turkish</Button>
-              {/* <Button className="mr-2 my-2" color="info" active={this.state.captions} onClick={() => { this.setState({ captions: !this.state.captions }); }}>Captions</Button> */}
+              {
+                codeCaptions.includes('en') && (
+                  <Button className="mr-2 my-2" color="info" active={'en' === this.state.captions} onClick={() => { this.setCaption('en'); }}>English</Button>
+                )
+              }
+              {
+                codeCaptions.includes('es') && (
+                  <Button className="mr-2 my-2" color="info" active={'es' === this.state.captions} onClick={() => { this.setCaption('es'); }}>Spanish</Button>
+                )
+              }
+              {
+                codeCaptions.includes('fr') && (
+                  <Button className="mr-2 my-2" color="info" active={'fr' === this.state.captions} onClick={() => { this.setCaption('fr'); }}>Frances</Button>
+                )
+              }
+              {
+                codeCaptions.includes('zh') && (
+                  <Button className="mr-2 my-2" color="info" active={'zh' === this.state.captions} onClick={() => { this.setCaption('zh'); }}>Chinese</Button>
+                )
+              }
+              {
+                codeCaptions.includes('tr') && (
+                  <Button className="mr-2 my-2" color="info" active={'tr' === this.state.captions} onClick={() => { this.setCaption('tr'); }}>Turkish</Button>
+                )
+              }
+              {
+                codeCaptions.includes('pt') && (
+                  <Button className="mr-2 my-2" color="info" active={'pt' === this.state.captions} onClick={() => { this.setCaption('pt'); }}>Portuguese</Button>
+                )
+              }
             </div>
             <div>
               <h5>Click to focus:</h5>
