@@ -5,6 +5,7 @@ import { NavbarBrand, Navbar, Nav, NavItem, NavLink } from 'reactstrap';
 import Upload from './upload';
 import Browse from './browse';
 import Settings from './settings';
+import Live from './Live';
 import Result from './result';
 import nubityIcon from './../img/nubity-icon.png';
 import './../styles/navbar.css';
@@ -53,6 +54,9 @@ class App extends Component {
               </NavbarBrand>
               <Nav className="ml-auto">
                 <NavItem>
+                  <NavLink tag={Link} to="/live" className="text-light">Live</NavLink>
+                </NavItem>
+                <NavItem>
                   <NavLink tag={Link} to="/" className="text-light">Media</NavLink>
                 </NavItem>
                 <NavItem>
@@ -67,6 +71,7 @@ class App extends Component {
             <Switch>
                 <Route exact path='/' component={Browse} />
                 <Route path='/collection' component={Upload} />
+                <Route path='/Live' component={Live} />
                 <Route path='/settings' component={Settings} />
                 <Route path='/result/:objectid' component={Result} />
             </Switch>
