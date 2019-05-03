@@ -34,7 +34,7 @@ let translate = (function () {
    * @class translate
    * @constructor
    */
-  let translate = function () {};
+  let translate = function () { };
 
   /**
    * Starts text translation job
@@ -48,112 +48,105 @@ let translate = (function () {
     let key = event_info.results.transcript.key;
     let language_code = (event_info.ai_options || {}).language_code.split('-')[0] || 'en';
     let source_text = (event_info.ai_options || {}).source_text || '';
-    let target_language_code = ((event_info.ai_options || {}).target_language_code || 'es').split('-')[0];
+    let target_language_codes = ((event_info.ai_options || {}).target_language_codes || ['en', 'es', 'pt', 'fr', 'zh', 'tr']);
 
     console.log('Key:: ', key, 'language_code:: ', language_code);
 
     let transcript_params = {
-        Bucket: s3Bucket,
-        Key: key
+      Bucket: s3Bucket,
+      Key: key
     }
 
     getTranscript(transcript_params, function (err, data) {
       if (err) {
         return cb(err, null);
-      } else {
-        let transcriptResults;
-        if (JSON.parse(data.Body.toString('utf-8')).status == 'MP4 FAILED') {
-          transcriptResults = null;
-        } else {
-          transcriptResults = getPhrasesFromTranscript(JSON.parse(data.Body.toString('utf-8')));
-        }
+      }
 
-        source_text = transcriptResults ? transcriptResults.transcripts[0].transcript : '';
+      const transcript = JSON.parse(data.Body.toString('utf-8'));
+      const transcriptResults = getPhrasesFromTranscript(transcript);
+
+      source_text = transcriptResults ? transcript.results.transcripts[0].transcript : '';
+
+      let tsCollection = {
+        accountId: transcript.accountId,
+      };
+
+      for (let target_language_code of target_language_codes) {
+        results[target_language_code] = {
+          transcripts: [],
+          items: [],
+        };
+
+        let results = {};
+
+        let localizedTs = {
+          results,
+        };
 
         if ('' === source_text) {
-          console.log('No words available for translation');
+          storageS3(event_info, localizedTs, cb);
         } else {
+          // Skip the translate if the source lang is the same as target lang
+          if (target_language_code === language_code) {
+            localizedTs = {
+              transcripts: transcript.results.transcripts,
+              items: transcript.results.items,
+            };
 
-          let newTs = {
-            results: {
-              accountId: transcriptResults.accountId,
-              transcripts: [],
-              items: []
-            }
-          };
-          let newItem = {};
-          let translate_params = {
+            continue;
+          }
+
+          const translate_params = {
             SourceLanguageCode: language_code,
             TargetLanguageCode: target_language_code,
             Text: source_text
           }
 
-          getTranslatedText(translate_params, function (err, data) {
-            if (err) {
-              return cb(err, null);
-            } else {
-              console.log(data.TranslatedText);
+          getTranslatedText(translate_params)
+            .then(({TranslatedText}) => {
+              const tsItem = {transcript: TranslatedText};
+              results = Object.assign({}, results, {transcripts: [tsItem]});
 
-              let tsItem = {transcript: data.TranslatedText};
+              const allPromises = transcriptResults.map((item) => {
+                return getTranslatedTextItem(item, language_code, target_language_code);
+              });
 
-              newTs.results.transcripts.push(tsItem);
+              Promise.all(allPromises)
+                .then((items) => {
+                  results = Object.assign({}, results, {items});
+                  localizedTs = Object.assign({}, localizedTs, {results});
 
-              return cb(null, data.TranslatedText);
-            }
-          });
-
-          for (let item in transcriptResults) {
-            translate_params.Text = item.words.join(' ');
-
-            getTranslatedText(translate_params, function (err, data) {
-              if (err) {
-                return cb(err, null);
-              } else {
-                console.log(data.TranslatedText);
-
-                newItem = {
-                  start_time: item.start_time,
-                  end_time: item.end_time,
-                  alternatives: [
-                    {
-                      confidence: 1,
-                      content: data.TranslatedText,
-                    }
-                  ],
-                  type: 'pronunciation'
-                };
-
-                newTs.results.items.push(newItem);
-
-                return cb(null, newItem);
-              }
+                  storageS3(event_info, localizedTs, cb);
+                });
+                // @todo: missing catch
             });
-          }
-
-          let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'translated_text.json'].join('/');
-
-          // @todo: ensure `newTs` is available and populated before trying to upload to S3
-          let s3_params = {
-            Bucket: s3Bucket,
-            Key: text_key,
-            Body: JSON.stringify(newTs),
-            ContentType: 'application/json'
-          };
-
-          upload.respond(s3_params, function (err, response) {
-            if (err) {
-              return cb(err, null);
-            } else {
-              let text_response = {'key': text_key, 'translate_json': newTs, 'status': "COMPLETE"};
-              return cb(null, text_response);
-            }
-          });
+            // @todo: missing catch
         }
       }
     });
   };
 
-  let getTranscript = function (params, cb) {
+  const storageS3 = function (event_info, localizedTs, cb) {
+    let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'transcript-intl.json'].join('/');
+
+    let s3_params = {
+      Bucket: s3Bucket,
+      Key: text_key,
+      Body: JSON.stringify(localizedTs),
+      ContentType: 'application/json'
+    };
+
+    upload.respond(s3_params, function (err, response) {
+      if (err) {
+        return cb(err, null);
+      }
+
+      let text_response = {'key': text_key, 'translate_json': localizedTs, 'status': "COMPLETE"};
+      return cb(null, text_response);
+    });
+  }
+
+  const getTranscript = function (params, cb) {
     let s3 = new AWS.S3();
     s3.getObject(params, function (err, data) {
       if (err) {
@@ -165,60 +158,75 @@ let translate = (function () {
     });
   };
 
-  let getTranslatedText = function (params, cb) {
-    let translate = new AWS.Translate();
-    translate.translateText(params, function (err, data) {
-      if (err) {
-        return cb(err, null);
-      } else {
-        return cb(null, data);
-      }
+  const getTranslatedText = function (params) {
+    const translate = new AWS.Translate();
+    return new Promise((resolve, reject) => {
+      translate.translateText(params, function (err, data) {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(data);
+      });
     });
   };
 
+  const getTranslatedTextItem = function (item, SourceLanguageCode, TargetLanguageCode) {
+    const Text = item.words.join(' ');
+    const translate = {
+      SourceLanguageCode,
+      TargetLanguageCode,
+      Text
+    };
+
+    return new Promise((resolve, reject) => {
+      getTranslatedText(translate)
+        .then(({TranslatedText}) => {
+          const newItem = {
+            start_time: item.start_time,
+            end_time: item.end_time,
+            alternatives: [
+              {
+                confidence: 1,
+                content: TranslatedText,
+              }
+            ],
+            type: 'pronunciation'
+          };
+
+          resolve(newItem)
+        });
+        // missing catch
+    });
+  }
+
   function getPhrasesFromTranscript(transcript) {
+    if (transcript.status === 'MP4 FAILED') {
+      return null;
+    }
+
     const items = transcript.results.items;
 
     // set up some variables for the first pass
-    let phrase = {};
     let phrases = [];
-    let nPhrase = true;
-    let x = 0;
-    let c = 0;
-
-    console.log('Creating phrases from transcript...');
-
-    for (let item in items) {
-        // if it is a new phrase, then get the start_time of the first item
-        if (nPhrase) {
-            if ('pronunciation' === item.type) {
-                phrase.start_time = item.start_time;
-                nPhrase = false;
-            }
-            c += 1
-        } else {
-            // We need to determine if this pronunciation or puncuation here
-            // Punctuation doesn't contain timing information, so we'll want
-            // to set the end_time to whatever the last word in the phrase is.
-            // Since we are reading through each word sequentially, we'll set
-            // the end_time if it is a word
-            if ('pronunciation' === item.type) {
-                phrase.end_time = item.end_time;
-            }
+    let phrase = {words: []};
+    const filteredItems = items
+      .filter((item) => 'pronunciation' === item.type);
+    filteredItems
+      .forEach((item, index) => {
+        if (0 === phrase.words.length) {
+          phrase = Object.assign({}, phrase, {start_time: item.start_time});
         }
 
-        // in either case, append the word to the phrase...
-        phrase.words.append(item.alternatives[0].content);
-        x += 1;
+        phrase = Object.assign({}, phrase, {words: [...phrase.words, item.alternatives[0].content]});
 
-        // now add the phrase to the phrases, generate a new phrase, etc.
-        if (10 === x) {
-            phrases.push(phrase);
-            phrase = {};
-            nPhrase = true;
-            x = 0;
+        if (10 === phrase.words.length || index === filteredItems.length - 1) {
+          phrase = Object.assign({}, phrase, {end_time: item.end_time});
+          // phrases.push(phrase);
+          phrases = [...phrases, {...phrase}];
+          phrase = {words: []};
         }
-    }
+      });
 
     return phrases;
   }

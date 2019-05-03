@@ -590,7 +590,12 @@ let lookup = (function() {
               else {
                 console.log('Building captioning output');
                 let captions_data = JSON.parse(data.Body.toString('utf-8'));
-                let captions_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results','transcript.json'].join('/')}, 'Captions':[]};
+                let captions_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results','transcript-intl.json'].join('/')}, 'Captions':[]};
+
+                // @todo: iterate over the available languages
+//                captions_data.results.forEach(lang => {
+//
+//                })
 
                 for (var i in captions_data.results.items) {
                     if (captions_data.results.items[i].type == 'pronunciation') {
