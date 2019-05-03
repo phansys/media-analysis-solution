@@ -381,26 +381,33 @@ class Result extends Component {
 
   getCaptions() {
     var self = this;
-    var video_captions = {};
+    
     var captions_path = ['/lookup',this.props.match.params.objectid,'captions'].join('/');
     API.get('MediaAnalysisApi', captions_path, {})
       .then(function(data) {
+
+        const video_captions = Object.keys(data.Captions).reduce((lastValue, lang) => {
+          const data = data.Captions[lang];
+
+          var captionOfLang = {};
           var ts = 0;
-          for (var c in data.Captions) {
-              if (data.Captions[c].hasOwnProperty("Content")) {
-                for (ts = (Math.floor((data.Captions[c].Timestamp)/100)*100) - 200; ts <= (Math.floor((data.Captions[c].Timestamp)/100)*100) + 2000; ts += 100) {
-                    if (video_captions.hasOwnProperty(ts)) {
-                        video_captions[ts].Captions += (" "+data.Captions[c].Content);
-                    }
-                    else {
-                        video_captions[ts] = {"Captions":data.Captions[c].Content};
-                    }
+          for (var c in data) {
+            if (data[c].hasOwnProperty("Content")) {
+              for (ts = (Math.floor((data[c].Timestamp)/100)*100) - 200; ts <= (Math.floor((data[c].Timestamp)/100)*100) + 2000; ts += 100) {
+                if (captionOfLang.hasOwnProperty(ts)) {
+                  captionOfLang[ts].Captions += (" "+data[c].Content);
+                }
+                else {
+                  captionOfLang[ts] = {"Captions":data[c].Content};
                 }
               }
+            }
           }
-          self.setState({
-              "captions": video_captions
-          });
+
+          return {...lastValue, [lang]: captionOfLang}
+        }, {});
+
+        self.setState({"captions": video_captions});
       })
       .catch(function(err) {
           //console.log(err);

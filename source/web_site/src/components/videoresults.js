@@ -101,8 +101,9 @@ class VideoResults extends Component {
       function drawBoxes() {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (self.state.captions) {
-          if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in self.props.captions) {
-            self.drawCaption(canvas, context, self.props.captions[Math.ceil((video.currentTime*1000)/100)*100].Captions);
+          const captions = self.props.captions[self.state.captions];
+          if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in captions) {
+            self.drawCaption(canvas, context, captions[Math.ceil((video.currentTime*1000)/100)*100].Captions);
           }
         }
         let items = self.state.boxes;
@@ -150,8 +151,9 @@ class VideoResults extends Component {
       function drawBoxes() {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (self.state.captions) {
-          if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in self.props.captions) {
-            self.drawCaption(canvas, context, self.props.captions[Math.ceil((video.currentTime*1000)/100)*100].Captions);
+          const captions = self.props.captions[self.state.captions];
+          if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in captions) {
+            self.drawCaption(canvas, context, captions[Math.ceil((video.currentTime*1000)/100)*100].Captions);
           }
         }
         let items = self.state.boxes;
@@ -265,7 +267,7 @@ class VideoResults extends Component {
               <Button className="mr-2 my-2" color="info" active={'en' === this.state.captions} onClick={() => { this.setCaption('en'); }}>English</Button>
               <Button className="mr-2 my-2" color="info" active={'es' === this.state.captions} onClick={() => { this.setCaption('es'); }}>Spanish</Button>
               <Button className="mr-2 my-2" color="info" active={'fl' === this.state.captions} onClick={() => { this.setCaption('fl'); }}>Frances</Button>
-              <Button className="mr-2 my-2" color="info" active={'ch' === this.state.captions} onClick={() => { this.setCaption('ch'); }}>Chinese</Button>
+              <Button className="mr-2 my-2" color="info" active={'zh' === this.state.captions} onClick={() => { this.setCaption('zh'); }}>Chinese</Button>
               <Button className="mr-2 my-2" color="info" active={'tk' === this.state.captions} onClick={() => { this.setCaption('tk'); }}>Turkish</Button>
               {/* <Button className="mr-2 my-2" color="info" active={this.state.captions} onClick={() => { this.setState({ captions: !this.state.captions }); }}>Captions</Button> */}
             </div>
