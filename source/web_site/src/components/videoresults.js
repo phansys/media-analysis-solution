@@ -12,7 +12,7 @@ class VideoResults extends Component {
       activeTab: 'labels',
       focusing: "nothing",
       boxes: [],
-      captions: false
+      captions: null,
     }
     this.tabToggle = this.tabToggle.bind(this);
     this.draw = this.draw.bind(this);
@@ -191,6 +191,13 @@ class VideoResults extends Component {
     }
   }
 
+
+  setCaption = (language) => {
+    let {captions} = this.state;
+
+    this.setState({captions: language === captions ? null : language});
+  }
+
   render() {
 
     var file_type = this.props.filetype;
@@ -249,7 +256,18 @@ class VideoResults extends Component {
               <Button className="mr-2 my-2" color="info" onClick={() => { this.videoControl('play'); }}>Play</Button>
               <Button className="mr-2 my-2" color="info" onClick={() => { this.videoControl('pause'); }}>Pause</Button>
               <Button className="mr-2 my-2" color="info" onClick={() => { this.videoControl('restart'); }}>Restart</Button>
-              <Button className="mr-2 my-2" color="info" active={this.state.captions} onClick={() => { this.setState({ captions: !this.state.captions }); }}>Captions</Button>
+            </div>
+            <div>
+              <h5>Captions:</h5>
+              <hr className="my-2" />
+            </div>
+            <div align="center">
+              <Button className="mr-2 my-2" color="info" active={'en' === this.state.captions} onClick={() => { this.setCaption('en'); }}>English</Button>
+              <Button className="mr-2 my-2" color="info" active={'es' === this.state.captions} onClick={() => { this.setCaption('es'); }}>Spanish</Button>
+              <Button className="mr-2 my-2" color="info" active={'fl' === this.state.captions} onClick={() => { this.setCaption('fl'); }}>Frances</Button>
+              <Button className="mr-2 my-2" color="info" active={'ch' === this.state.captions} onClick={() => { this.setCaption('ch'); }}>Chinese</Button>
+              <Button className="mr-2 my-2" color="info" active={'tk' === this.state.captions} onClick={() => { this.setCaption('tk'); }}>Turkish</Button>
+              {/* <Button className="mr-2 my-2" color="info" active={this.state.captions} onClick={() => { this.setState({ captions: !this.state.captions }); }}>Captions</Button> */}
             </div>
             <div>
               <h5>Click to focus:</h5>
