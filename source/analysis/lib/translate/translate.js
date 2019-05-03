@@ -71,60 +71,77 @@ let translate = (function () {
         accountId: transcript.accountId,
       };
 
-      for (let target_language_code of target_language_codes) {
-        results[target_language_code] = {
-          transcripts: [],
-          items: [],
-        };
+      getResultStructure(target_language_codes, language_code, source_text, transcriptResults)
+        .then((results) => {
+          tsCollection = Object.assign({}, tsCollection, {results});
 
-        let results = {};
-
-        let localizedTs = {
-          results,
-        };
-
-        if ('' === source_text) {
-          storageS3(event_info, localizedTs, cb);
-        } else {
-          // Skip the translate if the source lang is the same as target lang
-          if (target_language_code === language_code) {
-            localizedTs = {
-              transcripts: transcript.results.transcripts,
-              items: transcript.results.items,
-            };
-
-            continue;
-          }
-
-          const translate_params = {
-            SourceLanguageCode: language_code,
-            TargetLanguageCode: target_language_code,
-            Text: source_text
-          }
-
-          getTranslatedText(translate_params)
-            .then(({TranslatedText}) => {
-              const tsItem = {transcript: TranslatedText};
-              results = Object.assign({}, results, {transcripts: [tsItem]});
-
-              const allPromises = transcriptResults.map((item) => {
-                return getTranslatedTextItem(item, language_code, target_language_code);
-              });
-
-              Promise.all(allPromises)
-                .then((items) => {
-                  results = Object.assign({}, results, {items});
-                  localizedTs = Object.assign({}, localizedTs, {results});
-
-                  storageS3(event_info, localizedTs, cb);
-                });
-                // @todo: missing catch
-            });
-            // @todo: missing catch
-        }
-      }
+          storageS3(event_info, tsCollection, cb);
+        });
+      
     });
   };
+
+  const getResultStructure = function (allLanguages, language_code, source_text, transcriptResults) {
+    return new Promise((resolve, reject) => {
+      if ('' === source_text) {
+        const results = allLanguages.reduce((lastValue, language) => {
+          return {...lastValue, [language]: {transcripts: [{transcript: ''}], items: []}}
+        }, {});
+
+        resolve(results);
+      } else {
+        const allPromises = allLanguages.map((language) => processLanguage(language, language_code, source_text, transcriptResults));
+
+        Promise.all(allPromises)
+          .then((data) => {
+            const results = data.reduce((lastValue, item) => ({...lastValue, ...item}), {});
+            
+            resolve(results);
+          });
+      }
+    });
+  }
+
+  const processLanguage = function (currentLanguage, language_code, source_text, transcriptResults) {
+    return new Promise((resolve, reject) => {
+
+      let results = {};
+
+      if (currentLanguage === language_code) {
+        const items = transcriptResults.map((item) => {
+          const text = item.words.join(' ');
+
+          return getNewItem(item.start_time, item.end_time, text);
+        });
+        results = Object.assign({}, results, {transcripts: [{transcript: source_text}], items});
+        resolve({[currentLanguage]: results});
+      } else {
+        const translate_params = {
+          SourceLanguageCode: language_code,
+          TargetLanguageCode: currentLanguage,
+          Text: source_text
+        }
+
+        getTranslatedText(translate_params)
+          .then(({TranslatedText}) => {
+            results = Object.assign({}, results, {transcripts: [{transcript: TranslatedText}]})
+            
+            const allPromises = transcriptResults.map((item) => {
+              return getTranslatedTextItem(item, language_code, currentLanguage);
+            });
+
+            Promise.all(allPromises)
+              .then((items) => {
+                results = Object.assign({}, results, {items});
+                
+                resolve({[currentLanguage]: results})
+              });
+              // @todo: missing catch
+          });
+          // @todo: missing catch
+      }
+    });
+  }
 
   const storageS3 = function (event_info, localizedTs, cb) {
     let text_key = ['private', event_info.owner_id, 'media', event_info.object_id, 'results', 'transcript-intl.json'].join('/');
@@ -182,22 +199,28 @@ let translate = (function () {
     return new Promise((resolve, reject) => {
       getTranslatedText(translate)
         .then(({TranslatedText}) => {
-          const newItem = {
-            start_time: item.start_time,
-            end_time: item.end_time,
-            alternatives: [
-              {
-                confidence: 1,
-                content: TranslatedText,
-              }
-            ],
-            type: 'pronunciation'
-          };
+          const newItem = getNewItem(item.start_time, item.end_time, TranslatedText);
 
           resolve(newItem)
         });
         // missing catch
     });
+  }
+
+  const getNewItem = function (startTime, endTime, text) {
+    const newItem = {
+      start_time: startTime,
+      end_time: endTime,
+      alternatives: [
+        {
+          confidence: 1,
+          content: text,
+        }
+      ],
+      type: 'pronunciation'
+    };
+
+    return newItem;
   }
 
   function getPhrasesFromTranscript(transcript) {

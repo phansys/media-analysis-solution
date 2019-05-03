@@ -590,27 +590,17 @@ let lookup = (function() {
               else {
                 console.log('Building captioning output');
                 let captions_data = JSON.parse(data.Body.toString('utf-8'));
-                let captions_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results','transcript-intl.json'].join('/')}, 'Captions':[]};
+                
+                const Captions = Object.keys(captions_data.results).reduce((lastValue, lang) => {
+                    const data = captions_data.results[lang];
 
-                // @todo: iterate over the available languages
-//                captions_data.results.forEach(lang => {
-//
-//                })
+                    const results = data.items.map((item) => ({Content: item[0].content, Timestamp: item.start_time * 1000}));
 
-                for (var i in captions_data.results.items) {
-                    if (captions_data.results.items[i].type == 'pronunciation') {
-                        let confidence = 0;
-                        let content = '';
-                        let ts = '';
-                        for (var a in captions_data.results.items[i].alternatives) {
-                            if (captions_data.results.items[i].alternatives[a].confidence > confidence) {
-                                content = captions_data.results.items[i].alternatives[a].content;
-                                ts = captions_data.results.items[i].start_time*1000;
-                            }
-                            captions_out.Captions.push({'Content':content,'Timestamp':ts});
-                        }
-                    }
-                }
+                    return {...lastValue, [lang]: results};
+                }, {});
+
+                const captions_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results','transcript-intl.json'].join('/')}, Captions};
+
                 return cb(null, captions_out);
               }
           });
