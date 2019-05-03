@@ -20,10 +20,11 @@ class Live extends React.Component {
         <Row>
           <Col xs="12" >
             <h1 className="font-size--35">Live streaming</h1>
-            <VideoPlayer
-              {...videoJsOptions}
-              style={{height: '300px', width: '100%', maxHeight: '400px', maxWidth: '960px', marginLeft: 'auto', marginRight: 'auto'}}
-            />
+            <div style={{marginLeft: '50px', marginRight: '50px'}}>
+              <VideoPlayer
+                {...videoJsOptions}
+              />
+            </div>
           </Col>
         </Row>
       </Container>

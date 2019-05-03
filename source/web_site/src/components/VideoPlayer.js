@@ -34,7 +34,7 @@ class VideoPlayer extends React.Component {
     return (
       <div>    
         <div data-vjs-player>
-          <video ref={ node => this.videoNode = node } className="video-js" style={style}></video>
+          <video ref={ node => this.videoNode = node } className="video-js video-child" style={style}></video>
         </div>
       </div>
     )

@@ -21,3 +21,9 @@
 .font-size--35 {
   font-size: 35px;
 }
+
+.video-child {
+  height: 332px;
+  width: 590px;
+  margin: 0 auto;
+}
