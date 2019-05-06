@@ -516,7 +516,7 @@ class Result extends Component {
           });
       })
       .catch(function(err) {
-          console.log(err);
+          //console.log(err);
       });
   }
 
