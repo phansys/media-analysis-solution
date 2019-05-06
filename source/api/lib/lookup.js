@@ -523,10 +523,10 @@ let lookup = (function() {
 
           let s3_params = {
             Bucket: s3Bucket,
-            Key: ['private',owner_id,'media',object_id,'results','transcript.json'].join('/')
+            Key: ['private',owner_id,'media',object_id,'results','transcript-intl.json'].join('/')
           };
 
-          retrieveData(s3_params, owner_id, object_id, 'transcript', page_num, function(err, data) {
+          retrieveData(s3_params, owner_id, object_id, 'transcript-intl', page_num, function(err, data) {
               if (err) {
                 console.log(err);
                 return cb(err, null);
@@ -534,46 +534,17 @@ let lookup = (function() {
               else {
                 console.log('Building transcript data output');
                 let transcript_data = JSON.parse(data.Body.toString('utf-8'));
-                let transcript_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results','transcript.json'].join('/')}, 'Transcripts':[]};
+                let transcript_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results','transcript-intl.json'].join('/')}, 'Transcripts':{}};
 
-                for (var t in transcript_data.results.transcripts) {
-                    transcript_out.Transcripts.push({'Transcript':transcript_data.results.transcripts[t].transcript});
+                for (var lang in transcript_data.results) {
+                  transcript_out.Transcripts[lang] = [];
+                  for (var t in transcript_data.results[lang].transcripts) {
+                      transcript_out.Transcripts[lang].push({'Transcript':transcript_data.results[lang].transcripts[t].transcript});
+                  }
                 }
                 return cb(null, transcript_out);
               }
           });
-      }
-      else if (lookup_type === 'translate') {
-
-//          translate_language.forEach( language => {
-
-              let file_name = 'translated_text.json';
-
-              let s3_params = {
-                Bucket: s3Bucket,
-                Key: ['private',owner_id,'media',object_id,'results',file_name].join('/')
-              };
-
-              retrieveData(s3_params, owner_id, object_id, file_name, page_num, function(err, data) {
-                  if (err) {
-                    console.error(err);
-                    return cb(err, null);
-                  }
-                  else {
-                    console.log('Building translate data output');
-                    let translate_data = JSON.parse(data.Body.toString('utf-8'));
-                    console.log(translate_data);
-
-                    let translate_out = {'s3':{'bucket':s3Bucket,'key':['private',owner_id,'media',object_id,'results',file_name].join('/')}, 'Translates':{}};
-                    console.log(translate_out);
-
-                    for (var lang in translate_data.results.translations) {
-                        translate_out.Translates[lang] = {'Translate':translate_data.results.translations[lang]};
-                    }
-                    return cb(null, translate_out);
-                  }
-              });
-//          });
       }
       else if (lookup_type == 'captions') {
 
@@ -590,7 +561,7 @@ let lookup = (function() {
               else {
                 console.log('Building captioning output');
                 let captions_data = JSON.parse(data.Body.toString('utf-8'));
-                
+
                 const Captions = Object.keys(captions_data.results).reduce((lastValue, lang) => {
                     const data = captions_data.results[lang];
 
