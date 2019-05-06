@@ -55,7 +55,7 @@ let translate = (function () {
     let transcript_params = {
       Bucket: s3Bucket,
       Key: key
-    }
+    };
 
     getTranscript(transcript_params, function (err, data) {
       if (err) {
@@ -77,7 +77,7 @@ let translate = (function () {
 
           storageS3(event_info, tsCollection, cb);
         });
-      
+
     });
   };
 
@@ -95,7 +95,7 @@ let translate = (function () {
         Promise.all(allPromises)
           .then((data) => {
             const results = data.reduce((lastValue, item) => ({...lastValue, ...item}), {});
-            
+
             resolve(results);
           });
       }
@@ -125,7 +125,7 @@ let translate = (function () {
         getTranslatedText(translate_params)
           .then(({TranslatedText}) => {
             results = Object.assign({}, results, {transcripts: [{transcript: TranslatedText}]})
-            
+
             const allPromises = transcriptResults.map((item) => {
               return getTranslatedTextItem(item, language_code, currentLanguage);
             });
@@ -133,7 +133,7 @@ let translate = (function () {
             Promise.all(allPromises)
               .then((items) => {
                 results = Object.assign({}, results, {items});
-                
+
                 resolve({[currentLanguage]: results})
               });
               // @todo: missing catch
@@ -158,7 +158,8 @@ let translate = (function () {
         return cb(err, null);
       }
 
-      let text_response = {'key': text_key, 'translate_json': localizedTs, 'status': "COMPLETE"};
+      const text_response = {'key': text_key, 'status': "COMPLETE"};
+
       return cb(null, text_response);
     });
   }
