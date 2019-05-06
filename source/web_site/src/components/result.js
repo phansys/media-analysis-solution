@@ -6,6 +6,7 @@ import preview from '../img/preview.png';
 import ImageResults from './imageresults';
 import AudioResults from './audioresults';
 import VideoResults from './videoresults';
+import TranscriptTab from './TranscriptTab';
 const uuidv4 = require('uuid/v4');
 
 
@@ -21,7 +22,7 @@ class Result extends Component {
         celeb_list: [],
         entity_list: [],
         phrase_list: [],
-        transcript: '',
+        transcripts: {},
         translate: '',
         persons: [],
         file_type: 'jpg', //needed
@@ -48,7 +49,6 @@ class Result extends Component {
       this.getFaceMatches = this.getFaceMatches.bind(this);
       this.getPersons = this.getPersons.bind(this);
       this.getTranscript = this.getTranscript.bind(this);
-      this.getTranslate = this.getTranslate.bind(this);
       this.getEntities = this.getEntities.bind(this);
       this.getPhrases = this.getPhrases.bind(this);
       this.getCaptions = this.getCaptions.bind(this);
@@ -98,14 +98,12 @@ class Result extends Component {
             self.getFaceMatches();
             self.getPersons();
             self.getTranscript();
-            self.getTranslate();
             self.getEntities();
             self.getPhrases();
             self.getCaptions();
         }
         else if ( response.details.file_type === 'mp3' || response.details.file_type === 'wav' || response.details.file_type === 'flac' || response.details.file_type === 'wave') {
             self.getTranscript();
-            self.getTranslate();
             self.getEntities();
             self.getPhrases();
             self.getCaptions();
@@ -493,31 +491,14 @@ class Result extends Component {
     var transcript_path = ['/lookup',this.props.match.params.objectid,'transcript'].join('/');
     API.get('MediaAnalysisApi', transcript_path, {})
       .then(function(data) {
-          self.setState({
-              "transcript": data.Transcripts[0].Transcript
-          });
+        const {Transcripts} = data;
+
+        const transcripts = Object.keys(Transcripts).reduce((lastValue, lang) => ({...lastValue, [lang]: Transcripts[lang][0].Transcript}), {});
+
+        self.setState({transcripts});
       })
       .catch(function(err) {
           //console.log(err);
-      });
-  }
-
-
-  getTranslate() {
-    var self = this;
-    var translate_path = ['/lookup',this.props.match.params.objectid,'translate'].join('/');
-    API.get('MediaAnalysisApi', translate_path, {})
-      .then(function(data) {
-          let translate = '';
-          for (let lang in data.Translates) {
-            translate += lang + ': ' + data.Translates[lang].Translate + "\n\n";
-          }
-          self.setState({
-              "translate": translate
-          });
-      })
-      .catch(function(err) {
-          console.error(err);
       });
   }
 
@@ -594,9 +575,7 @@ class Result extends Component {
             )
         });
 
-        //let persons = this.state.persons;
-        let transcript = this.state.transcript;
-        let translate = this.state.translate;
+        const transcript = <TranscriptTab transcript={this.state.transcripts} />
 
         if (this.state.file_type === 'png' || this.state.file_type === 'jpg' || this.state.file_type === 'jpeg') {
           return (
@@ -629,7 +608,7 @@ class Result extends Component {
                   <Progress animated color="warning" value="100" />
                 </ModalBody>
               </Modal>
-                <AudioResults mediafile={this.state.media_file} filename={this.state.filename} filetype={this.state.file_type} transcript={transcript} translate={translate} captions={this.state.captions} phrases={phrases} entities={entities}/>
+                <AudioResults mediafile={this.state.media_file} filename={this.state.filename} filetype={this.state.file_type} transcript={transcript} captions={this.state.captions} phrases={phrases} entities={entities}/>
             </div>
 
           );
@@ -647,7 +626,7 @@ class Result extends Component {
                   <Progress animated color="warning" value="100" />
                 </ModalBody>
               </Modal>
-              <VideoResults phrases={phrases} entities={entities} captions={this.state.captions} transcript={this.state.transcript} translate={translate} individualcelebs={this.state.video_indv_celebs} allfaces={this.state.face_video} attributes={this.state.att_list} celebvideo={this.state.celeb_video} mediafile={this.state.media_file} filename={this.state.filename} filetype={this.state.file_type} persons={this.state.persons} labels={labels} individualknownfaces={this.state.video_indv_known_faces} allknownfaces={this.state.known_face_video}/>
+              <VideoResults phrases={phrases} entities={entities} captions={this.state.captions} transcript={transcript} individualcelebs={this.state.video_indv_celebs} allfaces={this.state.face_video} attributes={this.state.att_list} celebvideo={this.state.celeb_video} mediafile={this.state.media_file} filename={this.state.filename} filetype={this.state.file_type} persons={this.state.persons} labels={labels} individualknownfaces={this.state.video_indv_known_faces} allknownfaces={this.state.known_face_video}/>
             </div>
           );
         }
