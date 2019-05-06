@@ -5,134 +5,146 @@ import audio_img from '../img/audio.png';
 
 class AudioResults extends Component {
   constructor(props) {
-	    super(props);
-      this.state = {
-        activeTab: 'transcript',
-        captions: false
-      }
-      this.tabToggle = this.tabToggle.bind(this);
-      this.draw = this.draw.bind(this);
-      this.audioControl = this.audioControl.bind(this);
-    }
+    super(props);
+    this.state = {
+      activeTab: 'transcript',
+      captionLanguage: null,
+    };
+
+    this.tabToggle = this.tabToggle.bind(this);
+    this.draw = this.draw.bind(this);
+    this.audioControl = this.audioControl.bind(this);
+  }
 
 
   tabToggle(tab) {
     if (this.state.activeTab !== tab) {
-        this.setState({
-          activeTab: tab
-        });
+      this.setState({
+        activeTab: tab
+      });
     }
+  }
+
+  setCaption = (language) => {
+    let {captionLanguage} = this.state;
+
+    this.setState({captionLanguage: language === captionLanguage ? null : language});
+  }
+
+  drawCaption = (canvas, context, text) => {
+    context.beginPath();
+  
+    const widthText = context.measureText(text).width + 20;
+  
+    const marginLeft = (canvas.width - widthText) / 2;
+  
+    context.fillStyle = "rgba(8, 8, 8, 0.65)";
+    
+    context.fillRect(marginLeft, canvas.height - 40, widthText, 19);
+  
+    context.font = "17px Comic Sans MS";
+  
+    context.fillStyle = "white";
+    
+    context.fillText(text, marginLeft + 10, canvas.height - 26);
+  
+    context.closePath();
   }
 
   draw() {
 
-      var self = this;
-      var div = document.getElementById("resultview");
-      var audio = document.getElementById("resultaudio");
-      var audio_image = document.getElementById("resultaudio_img");
-      var canvas = document.getElementById("resultcanvas");
+    var self = this;
+    var div = document.getElementById("resultview");
+    var audio = document.getElementById("resultaudio");
+    var audio_image = document.getElementById("resultaudio_img");
+    var canvas = document.getElementById("resultcanvas");
 
-      if (canvas == null) {
+    if (canvas == null) {
 
-          //Create canvas
-          canvas = document.createElement('canvas');
+      //Create canvas
+      canvas = document.createElement('canvas');
 
-          //Configure canvas
-          canvas.id = "resultcanvas";
-          canvas.width=audio_image.width;
-          canvas.height=audio_image.height;
-          canvas.style.maxWidth="750px";
-          canvas.style.maxHeight="400px";
-          canvas.style.position = "relative";
-          //audio.style.display='none';
-          audio_image.style.display='none';
+      //Configure canvas
+      canvas.id = "resultcanvas";
+      canvas.width = audio_image.width;
+      canvas.height = audio_image.height;
+      canvas.style.maxWidth = "750px";
+      canvas.style.maxHeight = "400px";
+      canvas.style.position = "relative";
+      //audio.style.display='none';
+      audio_image.style.display = 'none';
 
 
-          //Append canvas to div
-          div.appendChild(canvas);
+      //Append canvas to div
+      div.appendChild(canvas);
 
-          //Draw image
-          var context = canvas.getContext('2d');
-          //Hide image
+      //Draw image
+      var context = canvas.getContext('2d');
+      //Hide image
 
-          var interval = setInterval(function(){ drawCaptions() },10);
-          function drawCaptions() {
-              context.drawImage(audio_image,0,0,canvas.width,canvas.height);
-              if (self.state.captions) {
-                  context.beginPath();
-                  context.fillStyle = "black";
-                  context.fillRect(0,0,canvas.width,60);
-                  context.closePath();
-                  if ((Math.ceil((audio.currentTime*1000)/100)*100) in self.props.captions) {
-                      context.beginPath();
-                      context.font = "15px Comic Sans MS";
-                      context.fillStyle = "white";
-                      context.fillText(self.props.captions[Math.ceil((audio.currentTime*1000)/100)*100].Captions,10,40)
-                      context.closePath();
-                  }
-              }
-
-              if (audio.ended || audio.paused) {
-                  clearInterval(interval);
-              }
+      var interval = setInterval(function () { drawCaptions() }, 10);
+      function drawCaptions() {
+        context.drawImage(audio_image, 0, 0, canvas.width, canvas.height);
+        if (self.state.captionLanguage) {
+          const captions = self.props.captions[self.state.captionLanguage];
+          if ((Math.ceil((audio.currentTime * 1000) / 100) * 100) in captions) {
+            self.drawCaption(canvas, context, captions[Math.ceil((audio.currentTime*1000)/100)*100].Captions);
           }
+        }
+
+        if (audio.ended || audio.paused) {
+          clearInterval(interval);
+        }
       }
+    }
 
-      else {
-          //Canvas already exists
+    else {
+      //Canvas already exists
 
-          //Clear canvas
-          var context = canvas.getContext('2d');
+      //Clear canvas
+      var context = canvas.getContext('2d');
 
-          var interval = setInterval(function(){ drawCaptions() },10);
-          function drawCaptions() {
+      var interval = setInterval(function () { drawCaptions() }, 10);
+      function drawCaptions() {
 
-              context.drawImage(audio_image,0,0,canvas.width,canvas.height);
-              if (self.state.captions) {
-                  context.beginPath();
-                  context.fillStyle = "black";
-                  context.fillRect(0,0,canvas.width,60);
-                  context.closePath();
-                  if ((Math.ceil((audio.currentTime*1000)/100)*100) in self.props.captions) {
-                      context.beginPath();
-                      context.font = "15px Comic Sans MS";
-                      context.fillStyle = "white";
-                      context.fillText(self.props.captions[Math.ceil((audio.currentTime*1000)/100)*100].Captions,10,40)
-                      context.closePath();
-                  }
-              }
-
-              if (audio.ended || audio.paused) {
-                  clearInterval(interval);
-              }
+        context.drawImage(audio_image, 0, 0, canvas.width, canvas.height);
+        if (self.state.captionLanguage) {
+          const captions = self.props.captions[self.state.captionLanguage];
+          if ((Math.ceil((audio.currentTime * 1000) / 100) * 100) in captions) {
+            self.drawCaption(canvas, context, captions[Math.ceil((audio.currentTime*1000)/100)*100].Captions);
           }
+        }
+
+        if (audio.ended || audio.paused) {
+          clearInterval(interval);
+        }
       }
+    }
   }
 
   audioControl(action) {
-      var audio = document.getElementById("resultaudio");
-      var self = this;
-      if (action === "play") {
-          if (audio.paused || audio.ended || audio.currentTime === 0){
-              audio.play();
-              self.draw();
-          }
+    var audio = document.getElementById("resultaudio");
+    var self = this;
+    if (action === "play") {
+      if (audio.paused || audio.ended || audio.currentTime === 0) {
+        audio.play();
+        self.draw();
       }
-      else if (action === "pause") {
-          audio.pause();
-      }
-      else if (action === "restart") {
-          audio.pause();
-          setTimeout(function(){
-              audio.currentTime = 0;
-              audio.play();
-              self.draw();
-          }, 20);
-      }
+    }
+    else if (action === "pause") {
+      audio.pause();
+    }
+    else if (action === "restart") {
+      audio.pause();
+      setTimeout(function () {
+        audio.currentTime = 0;
+        audio.play();
+        self.draw();
+      }, 20);
+    }
   }
 
   render() {
-
     //var file_type = this.props.filetype;
     var file_name = this.props.filename;
     var media_source = this.props.mediafile;
@@ -140,77 +152,120 @@ class AudioResults extends Component {
     var entities = this.props.entities;
     var phrases = this.props.phrases;
 
-        return (
-          <Container>
-            <Row>
-              <Col>
-                <div>
-                  <h1 align="center">{file_name}</h1>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col md="8">
-                <div id="resultview" align="center" className='mb-3' style={{"overflow":"scroll", "maxWidth":"750px", "maxHeight": "400px"}}>
-                  <img alt="preview" id="resultaudio_img" src={audio_img} style={{"overflow":"scroll", "maxWidth":"750px", "maxHeight": "400px"}} />
-                  <audio id="resultaudio" src={media_source}/>
-                </div>
-              </Col>
-              <Col md="4">
-                <div>
-                  <h5>Controls:</h5>
-                  <hr className="my-2" />
-                </div>
-                <div align="center">
-                  <Button className="mr-2 my-2" color="info" onClick={() => {this.audioControl('play'); }}>Play</Button>
-                  <Button className="mr-2 my-2" color="info" onClick={() => {this.audioControl('pause'); }}>Pause</Button>
-                  <Button className="mr-2 my-2" color="info" onClick={() => {this.audioControl('restart'); }}>Restart</Button>
-                  <Button className="mr-2 my-2" color="info" active={this.state.captions} onClick={() => {this.setState({captions: !this.state.captions}); }}>Captions</Button>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <div>
-                  <Nav tabs className="mb-3">
-                    <NavItem>
-                      <NavLink active={this.state.activeTab === "transcript"} onClick={() => { this.tabToggle('transcript'); }}>Transcript</NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink active={this.state.activeTab === "entities"} onClick={() => { this.tabToggle('entities'); }}>Entities</NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink active={this.state.activeTab === "phrases"} onClick={() => { this.tabToggle('phrases'); }}>Phrases</NavLink>
-                    </NavItem>
-                  </Nav>
-                  <TabContent activeTab={this.state.activeTab}>
-                    <TabPane tabId="phrases">
-                      <Row>
-                        <Col align="center">
-                          {phrases}
-                        </Col>
-                      </Row>
-                    </TabPane>
-                    <TabPane tabId="entities">
-                      <Row>
-                        <Col align="center">
-                          {entities}
-                        </Col>
-                      </Row>
-                    </TabPane>
-                    <TabPane tabId="transcript">
-                      <Row>
-                        <Col align="center">
-                          {transcript}
-                        </Col>
-                      </Row>
-                    </TabPane>
-                  </TabContent>
-                </div>
-              </Col>
-            </Row>
-          </Container>
-        );
+    const codeCaptions = Object.keys(this.props.captions).reduce((lastValue, lang) => {
+      if (0 < Object.keys(this.props.captions[lang]).length) {
+        lastValue = [...lastValue, lang];
+      }
+
+      return lastValue;
+    }, []);
+
+    return (
+      <Container>
+        <Row>
+          <Col>
+            <div>
+              <h1 align="center">{file_name}</h1>
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col md="8">
+            <div id="resultview" align="center" className='mb-3' style={{ "overflow": "scroll", "maxWidth": "750px", "maxHeight": "400px" }}>
+              <img alt="preview" id="resultaudio_img" src={audio_img} style={{ "overflow": "scroll", "maxWidth": "750px", "maxHeight": "400px" }} />
+              <audio id="resultaudio" src={media_source} />
+            </div>
+          </Col>
+          <Col md="4">
+            <div>
+              <h5>Controls:</h5>
+              <hr className="my-2" />
+            </div>
+            <div align="center">
+              <Button className="mr-2 my-2" color="info" onClick={() => { this.audioControl('play'); }}>Play</Button>
+              <Button className="mr-2 my-2" color="info" onClick={() => { this.audioControl('pause'); }}>Pause</Button>
+              <Button className="mr-2 my-2" color="info" onClick={() => { this.audioControl('restart'); }}>Restart</Button>
+            </div>
+            <div>
+              <hr className="my-2" />
+              <h5>Captions:</h5>
+            </div>
+            <div align="center">
+              {
+                codeCaptions.includes('en') && (
+                  <Button className="mr-2 my-2" color="info" active={'en' === this.state.captionLanguage} onClick={() => { this.setCaption('en'); }}>English</Button>
+                )
+              }
+              {
+                codeCaptions.includes('es') && (
+                  <Button className="mr-2 my-2" color="info" active={'es' === this.state.captionLanguage} onClick={() => { this.setCaption('es'); }}>Spanish</Button>
+                )
+              }
+              {
+                codeCaptions.includes('fr') && (
+                  <Button className="mr-2 my-2" color="info" active={'fr' === this.state.captionLanguage} onClick={() => { this.setCaption('fr'); }}>Frances</Button>
+                )
+              }
+              {
+                codeCaptions.includes('zh') && (
+                  <Button className="mr-2 my-2" color="info" active={'zh' === this.state.captionLanguage} onClick={() => { this.setCaption('zh'); }}>Chinese</Button>
+                )
+              }
+              {
+                codeCaptions.includes('tr') && (
+                  <Button className="mr-2 my-2" color="info" active={'tr' === this.state.captionLanguage} onClick={() => { this.setCaption('tr'); }}>Turkish</Button>
+                )
+              }
+              {
+                codeCaptions.includes('pt') && (
+                  <Button className="mr-2 my-2" color="info" active={'pt' === this.state.captionLanguage} onClick={() => { this.setCaption('pt'); }}>Portuguese</Button>
+                )
+              }
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <div>
+              <Nav tabs className="mb-3">
+                <NavItem>
+                  <NavLink active={this.state.activeTab === "transcript"} onClick={() => { this.tabToggle('transcript'); }}>Transcript</NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink active={this.state.activeTab === "entities"} onClick={() => { this.tabToggle('entities'); }}>Entities</NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink active={this.state.activeTab === "phrases"} onClick={() => { this.tabToggle('phrases'); }}>Phrases</NavLink>
+                </NavItem>
+              </Nav>
+              <TabContent activeTab={this.state.activeTab}>
+                <TabPane tabId="phrases">
+                  <Row>
+                    <Col align="center">
+                      {phrases}
+                    </Col>
+                  </Row>
+                </TabPane>
+                <TabPane tabId="entities">
+                  <Row>
+                    <Col align="center">
+                      {entities}
+                    </Col>
+                  </Row>
+                </TabPane>
+                <TabPane tabId="transcript">
+                  <Row>
+                    <Col align="center">
+                      {transcript}
+                    </Col>
+                  </Row>
+                </TabPane>
+              </TabContent>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    );
   }
 }
 
