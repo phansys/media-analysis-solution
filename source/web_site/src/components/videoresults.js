@@ -255,7 +255,7 @@ class VideoResults extends Component {
         </Row>
         <Row>
           <Col md="8">
-            <div id="resultview" align="center" className='mb-3' style={{ "overflow": "scroll", "maxWidth": "750px", "maxHeight": "400px", "margin-top":"20px" }}>
+            <div id="resultview" align="center" className='mb-3' style={{ "overflow": "scroll", "maxWidth": "750px", "maxHeight": "400px", "marginTop":"20px" }}>
               <video id="resultvid" src={media_source} className="img-fluid" />
             </div>
           </Col>
@@ -341,9 +341,6 @@ class VideoResults extends Component {
                   <NavLink active={this.state.activeTab === "transcript"} onClick={() => { this.tabToggle('transcript'); }}>Transcript</NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink active={this.state.activeTab === "translate"} onClick={() => { this.tabToggle('translate'); }}>Translate</NavLink>
-                </NavItem>
-                <NavItem>
                   <NavLink active={this.state.activeTab === "entities"} onClick={() => { this.tabToggle('entities'); }}>Entities</NavLink>
                 </NavItem>
                 <NavItem>
@@ -390,13 +387,6 @@ class VideoResults extends Component {
                   <Row>
                     <Col align="center">
                       {entities}
-                    </Col>
-                  </Row>
-                </TabPane>
-                <TabPane tabId="translate">
-                  <Row>
-                    <Col align="center">
-                      {translate}
                     </Col>
                   </Row>
                 </TabPane>
