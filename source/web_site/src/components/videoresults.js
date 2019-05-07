@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withAuthenticator } from 'aws-amplify-react';
 import { Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button, UncontrolledTooltip } from 'reactstrap';
+import Loading from './Loading';
 //import play from '../img/play.png';
 //import pause from '../img/pause.png';
 //import restart from '../img/restart.png';
@@ -52,21 +53,21 @@ class VideoResults extends Component {
 
   drawCaption = (canvas, context, text) => {
     context.beginPath();
-  
+
     const widthText = context.measureText(text).width + 20;
-  
+
     const marginLeft = (canvas.width - widthText) / 2;
-  
+
     context.fillStyle = "rgba(8, 8, 8, 0.65)";
-    
+
     context.fillRect(marginLeft, canvas.height - 40, widthText, 19);
-  
+
     context.font = "17px Comic Sans MS";
-  
+
     context.fillStyle = "white";
-    
+
     context.fillText(text, marginLeft + 10, canvas.height - 26);
-  
+
     context.closePath();
   }
 
@@ -83,8 +84,10 @@ class VideoResults extends Component {
 
       //Configure canvas
       canvas.id = "resultcanvas";
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      canvas.width = 750 < video.videoWidth ? 750 : video.videoWidth;
+      canvas.height = 400 < video.videoHeight ? 400 : video.videoHeight;
+      // canvas.width = video.videoWidth;
+      // canvas.height = video.videoHeight;
       canvas.style.maxWidth = "750px";
       canvas.style.maxHeight = "400px";
       canvas.style.position = "relative";
@@ -102,13 +105,16 @@ class VideoResults extends Component {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (self.state.captions) {
           const captions = self.props.captions[self.state.captions];
+          console.log('aqui msimo')
           if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in captions) {
-            self.drawCaption(canvas, context, captions[Math.ceil((video.currentTime*1000)/100)*100].Captions);
+
+            self.drawCaption(canvas, context, captions[Math.ceil((video.currentTime * 1000) / 100) * 100].Captions);
           }
         }
         let items = self.state.boxes;
         if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in items) {
           Object.keys(items[Math.ceil((video.currentTime * 1000) / 100) * 100]).forEach(function (key) {
+            console.log('tostado');
             let h = canvas.height * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Height;
             let w = canvas.width * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Width;
             let l = canvas.width * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Left;
@@ -152,13 +158,15 @@ class VideoResults extends Component {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (self.state.captions) {
           const captions = self.props.captions[self.state.captions];
+          console.log('aqui msimo')
           if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in captions) {
-            self.drawCaption(canvas, context, captions[Math.ceil((video.currentTime*1000)/100)*100].Captions);
+            self.drawCaption(canvas, context, captions[Math.ceil((video.currentTime * 1000) / 100) * 100].Captions);
           }
         }
         let items = self.state.boxes;
         if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in items) {
           Object.keys(items[Math.ceil((video.currentTime * 1000) / 100) * 100]).forEach(function (key) {
+            console.log('estads unidos');
             let h = canvas.height * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Height;
             let w = canvas.width * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Width;
             let l = canvas.width * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Left;
@@ -193,17 +201,14 @@ class VideoResults extends Component {
     }
   }
 
-
   setCaption = (language) => {
-    let {captions} = this.state;
+    let { captions } = this.state;
 
-    this.setState({captions: language === captions ? null : language});
+    this.setState({ captions: language === captions ? null : language });
   }
 
   render() {
-
-    var file_type = this.props.filetype;
-
+    // var file_type = this.props.filetype;
     //BUGFIX/media-analysis-35 mp4 and mov results are the same, removing if (mov) {}
     //var self = this;
     var file_name = this.props.filename;
@@ -215,24 +220,24 @@ class VideoResults extends Component {
     var phrases = this.props.phrases;
     var entities = this.props.entities;
     var transcript = this.props.transcript;
-    var translate = this.props.translate;
+    // var translate = this.props.translate;
 
-    var atts = this.props.attributes.map((att, index) => {
+    var atts = null === this.props.attributes ? <Loading /> : 0 === this.props.attributes.length ? 'Facial attributes unavailable' : this.props.attributes.map((att, index) => {
       return (
-      <div style={{"display":"inline-block"}} key={index}>
-        <Button id={att.Name.replace(/\s+/g, '-').toLowerCase()} color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: att.Name, boxes: att.Impressions }); }}>{att.Name}</Button>
-        <UncontrolledTooltip placement="top" target={att.Name.replace(/\s+/g, '-').toLowerCase()}>
-          {att.ConfidenceAverage.toFixed(3)}
-        </UncontrolledTooltip>
-      </div>
+        <div style={{ "display": "inline-block" }} key={index}>
+          <Button id={att.Name.replace(/\s+/g, '-').toLowerCase()} color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: att.Name, boxes: att.Impressions }); }}>{att.Name}</Button>
+          <UncontrolledTooltip placement="top" target={att.Name.replace(/\s+/g, '-').toLowerCase()}>
+            {att.ConfidenceAverage.toFixed(3)}
+          </UncontrolledTooltip>
+        </div>
       )
     });
 
-    var celebs = this.props.individualcelebs.map((celeb, index) => {
-      return (<Button key={index} color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: celeb.Name, boxes: celeb.Impressions }); }}>{celeb.Name}</Button>)
-    });
+    // var celebs = null === this.props.individualcelebs ? <Loading /> : this.props.individualcelebs.map((celeb, index) => {
+    //   return (<Button key={index} color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: celeb.Name, boxes: celeb.Impressions }); }}>{celeb.Name}</Button>)
+    // });
 
-    var face_matches = this.props.individualknownfaces.map((face, index) => {
+    var face_matches = null === this.props.individualknownfaces ? <Loading /> : 0 === this.props.individualknownfaces.length ? 'Know collections unavailable' : this.props.individualknownfaces.map((face, index) => {
       return (<Button key={index} color="primary" className="ml-1 mr-1 mb-1 mt-1" onClick={() => { this.setState({ focusing: face.Name, boxes: face.Impressions }); }}>{face.Name}</Button>)
     });
 
@@ -254,8 +259,8 @@ class VideoResults extends Component {
           </Col>
         </Row>
         <Row>
-          <Col md="8">
-            <div id="resultview" align="center" className='mb-3' style={{ "overflow": "scroll", "maxWidth": "750px", "maxHeight": "400px", "marginTop":"20px" }}>
+          <Col md="8" style={{marginTop: '20'}}>
+            <div id="resultview" align="center" className='mb-3' style={{maxWidth: "750px", maxHeight: "400px", marginTop: "20px" }}>
               <video id="resultvid" src={media_source} className="img-fluid" />
             </div>
           </Col>
@@ -369,13 +374,13 @@ class VideoResults extends Component {
                     </Col>
                   </Row>
                 </TabPane>
-                <TabPane tabId="celebs">
+                {/* <TabPane tabId="celebs">
                   <Row>
                     <Col align="center">
                       {celebs}
                     </Col>
                   </Row>
-                </TabPane>
+                </TabPane> */}
                 <TabPane tabId="phrases">
                   <Row>
                     <Col align="center">

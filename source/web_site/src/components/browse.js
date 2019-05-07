@@ -123,6 +123,10 @@ class Browse extends Component {
 	}
 
 	toggleModal = () => {
+		if (this.state.searching) {
+			return;
+		}
+
 		this.setState((prev) => ({ isOpenModal: !prev.isOpenModal }));
 	}
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Input, InputGroup, InputGroupAddon} from 'reactstrap';
+import Loading from './Loading';
 
 /**
  * This component renders a input file
@@ -67,9 +68,7 @@ class InputUpload extends React.Component {
 
     if (isLoading) {
       return (
-        <div className="spinner-border text-secondary" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
+        <Loading />
       );
     }
 

@@ -34,7 +34,13 @@ export default class TranscriptTab extends React.Component {
       'pt': 'Portuguese',
     };
 
-    Object.keys(transcript).forEach((lang, index) => {
+    const transcriptKeys = Object.keys(transcript);
+
+    if (0 === transcriptKeys.length) {
+      return 'Transcript unavailable';
+    }
+
+    transcriptKeys.forEach((lang, index) => {
       navItems = [
         ...navItems,
         <NavItem key={index}>
