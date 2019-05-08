@@ -51,23 +51,57 @@ class VideoResults extends Component {
     }
   }
 
+  getIndexOfMiddleWord = (text) => {
+    const middle = Math.floor(text.length / 2);
+    const before = text.lastIndexOf(' ', middle);
+    const after = text.indexOf(' ', middle + 1);
+
+    if (middle - before < after - middle) {
+      return before;
+    }
+
+    return after;
+  }
+
   drawCaption = (canvas, context, text) => {
     context.beginPath();
 
     const widthText = context.measureText(text).width + 20;
+    
+    if (canvas.width - 200 < widthText) {
+      const middleIndex = this.getIndexOfMiddleWord(text);
 
-    const marginLeft = (canvas.width - widthText) / 2;
+      const words = [
+        text.substr(0, middleIndex),
+        text.substr(middleIndex + 1)
+      ];
 
-    context.fillStyle = "rgba(8, 8, 8, 0.65)";
+      const widthTextOne = context.measureText(words[0]).width + 20;
+      const marginTextOneLeft = (canvas.width - widthTextOne) / 2;
+      context.fillStyle = "rgba(8, 8, 8, 0.65)";
+      context.fillRect(marginTextOneLeft, canvas.height - 48, widthTextOne, 19);
+      context.font = "17px Comic Sans MS";
+      context.fillStyle = "white";
+      context.fillText(words[0], marginTextOneLeft + 10, canvas.height - 34);
 
-    context.fillRect(marginLeft, canvas.height - 40, widthText, 19);
+      //////////////////////////////////////////////////////////////////////
+      
+      const widthTextTwo = context.measureText(words[1]).width + 20;
+      const marginTextTwoLeft = (canvas.width - widthTextTwo) / 2;
+      context.fillStyle = "rgba(0, 0, 0, 0.50)";
+      context.fillRect(marginTextTwoLeft, canvas.height - 29, widthTextTwo, 19);
+      context.font = "17px Comic Sans MS";
+      context.fillStyle = "white";
+      context.fillText(words[1], marginTextTwoLeft + 10, canvas.height - 15);
 
-    context.font = "17px Comic Sans MS";
-
-    context.fillStyle = "white";
-
-    context.fillText(text, marginLeft + 10, canvas.height - 26);
-
+    } else {
+      const marginLeft = (canvas.width - widthText) / 2;
+      context.fillStyle = "rgba(8, 8, 8, 0.65)";
+      context.fillRect(marginLeft, canvas.height - 40, widthText, 19);
+      context.font = "17px Comic Sans MS";
+      context.fillStyle = "white";
+      context.fillText(text, marginLeft + 10, canvas.height - 26);
+    }
     context.closePath();
   }
 
