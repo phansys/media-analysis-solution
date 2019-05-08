@@ -105,16 +105,18 @@ class VideoResults extends Component {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (self.state.captions) {
           const captions = self.props.captions[self.state.captions];
-          console.log('aqui msimo')
-          if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in captions) {
-
-            self.drawCaption(canvas, context, captions[Math.ceil((video.currentTime * 1000) / 100) * 100].Captions);
-          }
+          Object.keys(captions).forEach(key => {
+            const currentTime = Math.ceil((video.currentTime * 1000) / 100) * 100;
+            if (currentTime >= key && currentTime <= captions[key].TimestampEnd) {
+              self.drawCaption(canvas, context, captions[key].Captions);
+  
+              return;
+            }
+          });
         }
         let items = self.state.boxes;
         if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in items) {
           Object.keys(items[Math.ceil((video.currentTime * 1000) / 100) * 100]).forEach(function (key) {
-            console.log('tostado');
             let h = canvas.height * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Height;
             let w = canvas.width * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Width;
             let l = canvas.width * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Left;
@@ -158,15 +160,18 @@ class VideoResults extends Component {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (self.state.captions) {
           const captions = self.props.captions[self.state.captions];
-          console.log('aqui msimo')
-          if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in captions) {
-            self.drawCaption(canvas, context, captions[Math.ceil((video.currentTime * 1000) / 100) * 100].Captions);
-          }
+          Object.keys(captions).forEach(key => {
+            const currentTime = Math.ceil((video.currentTime * 1000) / 100) * 100;
+            if (currentTime >= key && currentTime <= captions[key].TimestampEnd) {
+              self.drawCaption(canvas, context, captions[key].Captions);
+  
+              return;
+            }
+          });
         }
         let items = self.state.boxes;
         if ((Math.ceil((video.currentTime * 1000) / 100) * 100) in items) {
           Object.keys(items[Math.ceil((video.currentTime * 1000) / 100) * 100]).forEach(function (key) {
-            console.log('estads unidos');
             let h = canvas.height * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Height;
             let w = canvas.width * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Width;
             let l = canvas.width * items[Math.ceil((video.currentTime * 1000) / 100) * 100][key].BoundingBox.Left;

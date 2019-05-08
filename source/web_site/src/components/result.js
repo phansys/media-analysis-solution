@@ -394,11 +394,12 @@ class Result extends Component {
           for (var c in languageCaptions) {
             if (languageCaptions[c].hasOwnProperty("Content")) {
               for (ts = (Math.floor((languageCaptions[c].Timestamp) / 100) * 100) - 200; ts <= (Math.floor((languageCaptions[c].Timestamp) / 100) * 100) + 2000; ts += 100) {
+                let tsEnd = (Math.floor((languageCaptions[c].TimestampEnd) / 100) * 100) - 200;
                 if (captionOfLang.hasOwnProperty(ts)) {
                   captionOfLang[ts].Captions += (" " + languageCaptions[c].Content);
                 }
                 else {
-                  captionOfLang[ts] = { Captions: languageCaptions[c].Content };
+                  captionOfLang[ts] = { Captions: languageCaptions[c].Content, TimestampEnd: tsEnd };
                 }
               }
             }
