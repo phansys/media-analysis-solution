@@ -9,6 +9,8 @@ import Live from './Live';
 import Result from './result';
 import nubityIcon from './../img/nubity-icon.png';
 import './../styles/navbar.css';
+import Layout from './layout';
+import VimeoBimbo from './VimeoBimbo';
 declare var media_analysis_config;
 
 Amplify.configure({
@@ -45,38 +47,17 @@ class App extends Component {
     return (
       <div>
         <Router>
-          <div>
-            <Navbar color="dark">
-              <NavbarBrand tag={Link} to="/">
-                <img alt="Media Analysis Solution" src={nubityIcon} className="brand-image"  />
-                <span className="ml-2 text-white">Nubity media solution</span>
-              </NavbarBrand>
-              <Nav className="ml-auto">
-                <NavItem>
-                  <NavLink tag={RRNavLink} to="/live" className="text-light" activeClassName="active">Live</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={RRNavLink} to="/" className="text-light" activeClassName="active" exact>Media</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={RRNavLink} to="/collection" className="text-light" activeClassName="active">Collection</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={RRNavLink} to="/settings" className="text-light" activeClassName="active">Settings</NavLink>
-                </NavItem>
-              </Nav>
-            </Navbar>
-            <hr />
-            <Switch>
-                <Route exact path='/' component={Browse} />
-                <Route path='/collection' component={Upload} />
-                <Route path='/Live' component={Live} />
-                <Route path='/settings' component={Settings} />
-                <Route path='/result/:objectid' component={Result} />
-            </Switch>
-          </div>
+          <Switch>
+            <Route path='/bimbo' component={VimeoBimbo} />
+            <Layout>
+              <Route exact path='/' component={Browse} />
+              <Route path='/collection' component={Upload} />
+              <Route path='/Live' component={Live} />
+              <Route path='/settings' component={Settings} />
+              <Route path='/result/:objectid' component={Result} />
+            </Layout>
+          </Switch>
         </Router>
-        <hr />
       </div>
     );
   }
