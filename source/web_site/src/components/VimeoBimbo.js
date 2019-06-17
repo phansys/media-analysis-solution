@@ -3,7 +3,7 @@ import {NavLink} from 'react-router-dom';
 import VideoPlayer from './VideoPlayer';
 import bimboLogo from './bimbo/logotipo.svg'
 import './../styles/bimbo.css';
-import {Container, Row, Col, Button} from 'reactstrap';
+import {Container, Row, Col, Button, Alert} from 'reactstrap';
 
 export default class VimeoBimbo extends React.Component {
   render() {
@@ -11,7 +11,7 @@ export default class VimeoBimbo extends React.Component {
       autoplay: false,
       controls: true,
       sources: [{
-        src: 'https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8',
+        src: 'https://63050ee307b58b8f.mediapackage.us-east-1.amazonaws.com/out/v1/3c674342708140ca934c5c87f2fb0774/index.m3u8',
         type: 'application/x-mpegURL',
       }]
     };
@@ -26,14 +26,14 @@ export default class VimeoBimbo extends React.Component {
             </a>
             <nav>
               <ul>
-                <li><NavLink to="/bimbo" activeClassName="active">Bimbo</NavLink></li>
-                <li><NavLink to="/live" activeClassName="active">Live</NavLink></li>
+                <li><NavLink to="/bimbo" activeClassName="active">Live</NavLink></li>
+                {/* <li><NavLink to="/live" activeClassName="active">Live</NavLink></li>
                 <li><NavLink to="/" activeClassName="active" exact>Media</NavLink></li>
                 <li><NavLink to="/collection" activeClassName="active">Collection</NavLink></li>
-                <li><NavLink to="/settings" activeClassName="active">Settings</NavLink></li>
+                <li><NavLink to="/settings" activeClassName="active">Settings</NavLink></li> */}
               </ul>
             </nav>
-            <div className="ml-auto d-flex align-items-center">
+            {/* <div className="ml-auto d-flex align-items-center">
               <div className="filter-input">
                 <input placeholder="Search videos, people, and more" />
                 <i className="fa fa-search filter-button"></i>
@@ -42,22 +42,31 @@ export default class VimeoBimbo extends React.Component {
                 <i className="mr-2 fa fa-cloud-upload"></i>
                 subir
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="main">
-          <div className="player-area">
+          {/* <div className="player-area">
+            <VideoPlayer
+              {...videoJsOptions}
+            />
+          </div> */}
+          <div>
+            <Container className="mt-3">
+              <Row className="justify-content-md-center">
+                <Col sm="7">
+                <div className="player-area">
             <VideoPlayer
               {...videoJsOptions}
             />
           </div>
-          <div>
-            <Container className="mt-3">
-              <Row>
-                <Col sm="8">
                   <div>
-                    <h1 className="line-height--1">Cuanto más tranquilo seas, más podrás oír.</h1>
-                    <p className="font-size--13">
+                    <h1 className="title line-height--1">PLANT BASED FOOD - Bimbo Ventures.</h1>
+                    <div className="help">
+                  <h3 className="line-height--1">Ayuda</h3>
+                    Si desea modificar el idioma de los subtítulos, puede utilizar el control "cc" que se encuentra disponible en la sección inferior del reproductor.
+                  </div>
+                    {/* <p className="font-size--13">
                       <time datetime="2019-05-07 23:50:05" title="Tuesday, May 7, 2019 at 11:50 PM EST">1 month ago</time>
                       <a className="clip-info__more">Más</a>
                     </p>
@@ -80,11 +89,12 @@ export default class VimeoBimbo extends React.Component {
                     <div className="comments">
                       <h3>Deja el primer comentario:</h3>
                       <textarea placeholder="Agrega un nuevo comentario"></textarea>
-                    </div>
+                    </div> */}
                   </div>
                 </Col>
-                <Col sm="4">
-                  <div>
+                {/* <Col sm="4"> */}
+                  
+                  {/* <div>
                     <h3 className="line-height--1">Más de craig anderson</h3>
                     <div className="d-flex align-items-center">
                       <div className="position-relative mr-2">
@@ -113,8 +123,8 @@ export default class VimeoBimbo extends React.Component {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Col>
+                  </div> */}
+                {/* </Col> */}
               </Row>
             </Container>
           </div>
@@ -159,12 +169,12 @@ export default class VimeoBimbo extends React.Component {
             </ul>
           </div>
           <div className="right">
-            <div className="language-container">
+            {/* <div className="language-container">
               <select className="language">
                 <option selected>Español</option>
                 <option>Ingles</option>
               </select>
-            </div>
+            </div> */}
             <a href="https://grupobimbo.com/es/inversionistas">
               <h6>
                 Inversionistas

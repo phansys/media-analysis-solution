@@ -120,13 +120,34 @@ body {
   content: '';
 }
 
+.main {
+  min-height: calc(100vh - 302px - 48px - 64px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 0; 
+}
+
+.help {
+  color: #ccc;
+  width: 590px;
+}
+
+.title {
+  margin: 15px 0;
+  font-size: 33px;
+}
+
+.player-area .video-child {
+  margin: 0 0 10px 0;
+}
+
 .player-area {
   width: 100%;
-  background: #000;
   max-height: 540px;
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  align-items: stretch;
+  align-items: center; */
 }
 
 .clip-info__more {
