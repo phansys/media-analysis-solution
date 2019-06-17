@@ -48,7 +48,7 @@ class App extends Component {
       <div>
         <Router>
           <Switch>
-            <Route path='/bimbo' component={VimeoBimbo} />
+            <Route path='/bimbo-live' component={VimeoBimbo} />
             <Layout>
               <Route exact path='/' component={Browse} />
               <Route path='/collection' component={Upload} />

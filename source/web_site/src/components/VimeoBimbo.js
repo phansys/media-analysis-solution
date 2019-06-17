@@ -26,7 +26,7 @@ export default class VimeoBimbo extends React.Component {
             </a>
             <nav>
               <ul>
-                <li><NavLink to="/bimbo" activeClassName="active">Live</NavLink></li>
+                <li><NavLink to="/bimbo-live" activeClassName="active">Live</NavLink></li>
                 {/* <li><NavLink to="/live" activeClassName="active">Live</NavLink></li>
                 <li><NavLink to="/" activeClassName="active" exact>Media</NavLink></li>
                 <li><NavLink to="/collection" activeClassName="active">Collection</NavLink></li>

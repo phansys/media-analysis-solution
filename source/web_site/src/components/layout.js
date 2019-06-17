@@ -14,7 +14,7 @@ export default class Layout extends React.Component {
           </NavbarBrand>
           <Nav className="ml-auto">
             <NavItem>
-              <NavLink tag={RRNavLink} to="/bimbo" className="text-light" activeClassName="active">Bimbo</NavLink>
+              <NavLink tag={RRNavLink} to="/bimbo-live" className="text-light" activeClassName="active">Bimbo</NavLink>
             </NavItem>
             <NavItem>
               <NavLink tag={RRNavLink} to="/live" className="text-light" activeClassName="active">Live</NavLink>
