@@ -5,7 +5,6 @@ import { Alert, Container, Row, Col, Form, FormGroup, Input, Button, Modal, Moda
 import MediaCard from './mediacard';
 import UploadMedia from './UploadMedia';
 import StatusModal from './statusmodal';
-import Layout from './layout'
 
 class Browse extends Component {
 	constructor(props) {
@@ -173,64 +172,62 @@ class Browse extends Component {
 		});
 
 		return (
-			<Layout>
-				<Container fluid className="bg-light">
-					<div>
-						<Alert name="noresults" color="warning" isOpen={this.state.noresults} toggle={this.Dismiss}>
-							Search returned no results
-						</Alert>
-						<Alert name="error" color="danger" isOpen={this.state.error} toggle={this.Dismiss}>
-							Search Error
-						</Alert>
-					</div>
-					<div>
-						<Modal isOpen={this.state.searching}>
-							<ModalHeader>Searching</ModalHeader>
-							<ModalBody>
-								<Progress animated color="warning" value="100" />
-							</ModalBody>
-						</Modal>
+      <Container fluid className="bg-light">
+        <div>
+          <Alert name="noresults" color="warning" isOpen={this.state.noresults} toggle={this.Dismiss}>
+            Search returned no results
+          </Alert>
+          <Alert name="error" color="danger" isOpen={this.state.error} toggle={this.Dismiss}>
+            Search Error
+          </Alert>
+        </div>
+        <div>
+          <Modal isOpen={this.state.searching}>
+            <ModalHeader>Searching</ModalHeader>
+            <ModalBody>
+              <Progress animated color="warning" value="100" />
+            </ModalBody>
+          </Modal>
 
-						<Modal isOpen={isOpenModal} toggle={this.toggleModal} size="lg">
-							<ModalHeader>Add analyze new Media</ModalHeader>
-							<ModalBody>
-								<p className="lead font-size--18">Upload new image, video, or audio file to be analyzed by the Media Analysis Solution</p>
-								<Row>
-									<Col>
-										<UploadMedia fetchCallback={this.fetchCallback} />
-									</Col>
-								</Row>
-							</ModalBody>
-						</Modal>
+          <Modal isOpen={isOpenModal} toggle={this.toggleModal} size="lg">
+            <ModalHeader>Add analyze new Media</ModalHeader>
+            <ModalBody>
+              <p className="lead font-size--18">Upload new image, video, or audio file to be analyzed by the Media Analysis Solution</p>
+              <Row>
+                <Col>
+                  <UploadMedia fetchCallback={this.fetchCallback} />
+                </Col>
+              </Row>
+            </ModalBody>
+          </Modal>
 
-						<Modal isOpen={null !== uuid} toggle={this.closeModalStatus}>
-							<StatusModal format={fileExt} objectid={uuid}/>
-						</Modal>
-					</div>
-					<div className="justify-content-between" style={{ display: 'flex' }}>
-						<Form inline className="pt-2 pb-2" onSubmit={this.Search}>
-							<Button type="submit" >Search</Button>
-							<FormGroup className="mr-2 ml-4">
-								<Input name="searchterm" type="text" value={this.searchterm} placeholder="keyword..." onChange={this.Change} />
-							</FormGroup>
-						</Form>
-						<div className="pt-2">
-							<button className="btn btn-primary" onClick={this.toggleModal}>Add Media</button>
-							</div>
-					</div>
-					<Container>
-						<Row>
-							{media_cards}
-						</Row>
-					</Container>
-					<div>
-						<Pagination className="pb-2 justify-content-end">
-							{page_numbers}
-						</Pagination>
-						<h6 align="right">Viewing {((this.state.current_page - 1) * 6) + media_cards.length} of {this.state.result_count} results</h6>
-					</div>
-				</Container>
-			</Layout>
+          <Modal isOpen={null !== uuid} toggle={this.closeModalStatus}>
+            <StatusModal format={fileExt} objectid={uuid}/>
+          </Modal>
+        </div>
+        <div className="justify-content-between" style={{ display: 'flex' }}>
+          <Form inline className="pt-2 pb-2" onSubmit={this.Search}>
+            <Button type="submit" >Search</Button>
+            <FormGroup className="mr-2 ml-4">
+              <Input name="searchterm" type="text" value={this.searchterm} placeholder="keyword..." onChange={this.Change} />
+            </FormGroup>
+          </Form>
+          <div className="pt-2">
+            <button className="btn btn-primary" onClick={this.toggleModal}>Add Media</button>
+            </div>
+        </div>
+        <Container>
+          <Row>
+            {media_cards}
+          </Row>
+        </Container>
+        <div>
+          <Pagination className="pb-2 justify-content-end">
+            {page_numbers}
+          </Pagination>
+          <h6 align="right">Viewing {((this.state.current_page - 1) * 6) + media_cards.length} of {this.state.result_count} results</h6>
+        </div>
+      </Container>
 		);
 	}
 }
