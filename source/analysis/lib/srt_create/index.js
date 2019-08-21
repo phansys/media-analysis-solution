@@ -21,7 +21,7 @@ let SrtCreate = require('./srt_create.js');
 
 module.exports.respond = function(event, cb) {
     let _srt_create = new SrtCreate();
-    _srt_create.startTranslation(event, function(err, data) {
+    _srt_create.startConvertStr(event, function(err, data) {
         if (err) {
             return cb(err, null);
         }
