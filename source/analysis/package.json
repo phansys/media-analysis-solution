@@ -8,22 +8,23 @@
     "version": "0.0.1",
     "private": "true",
     "dependencies": {
-        "uuid": "*",
-        "request": "*",
+        "aws-transcription-to-srt": "^1.0.5",
         "elasticsearch": "*",
         "http-aws-es": "*",
+        "https": "*",
+        "request": "*",
         "url": "*",
-        "https": "*"
+        "uuid": "*"
     },
     "devDependencies": {
         "aws-sdk": "*",
-        "chai": "*",
-        "sinon": "*",
-        "sinon-chai": "*",
-        "mocha": "*",
         "aws-sdk-mock": "*",
+        "chai": "*",
+        "mocha": "*",
         "npm-run-all": "*",
-        "proxyquire": "*"
+        "proxyquire": "*",
+        "sinon": "*",
+        "sinon-chai": "*"
     },
     "scripts": {
         "pretest": "npm install",

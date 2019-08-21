@@ -379,6 +379,21 @@ Resources:
                               "Resource": "${lambdaArn}",
                               "InputPath": "$",
                               "ResultPath": "$.translate",
+                              "Next": "Create SRT"
+                            },
+                            "Create SRT": {
+                              "Type": "Pass",
+                              "Result": {
+                                "service_name": "srt_create"
+                              },
+                              "ResultPath": "$.lambda",
+                              "Next": "Build SRT"
+                            },
+                            "Build SRT": {
+                              "Type": "Task",
+                              "Resource": "${lambdaArn}",
+                              "InputPath": "$",
+                              "ResultPath": "$.srt",
                               "Next": "Get Comprehension"
                             },
                             "Get Comprehension": {
