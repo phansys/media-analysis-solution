@@ -42,15 +42,14 @@ let srt_create = (function () {
    * @param {startTranslation~callback} cb - The callback that handles the response.
    */
 
-  srt_create.prototype.convert = function (event_info, cb) {
+  srt_create.prototype.startConvertStr = function (event_info, cb) {
     console.log('Executing SRT creation');
 
-    let key = event_info.results.transcript.key;
-    let source_text = (event_info.ai_options || {}).source_text || '';
+    const key = event_info.results.transcript.key;
 
     console.log('Key:: ', key);
 
-    let transcript_params = {
+    const transcript_params = {
       Bucket: s3Bucket,
       Key: key
     };
@@ -62,7 +61,7 @@ let srt_create = (function () {
 
       const transcript = JSON.parse(data.Body.toString('utf-8'));
 
-      source_text = transcript.results.transcripts[0].transcript;
+      const source_text = transcript.results.transcripts[0].transcript;
 
       convertTsToSrt(source_text)
         .then((results) => {
@@ -106,7 +105,10 @@ let srt_create = (function () {
   };
 
   const convertTsToSrt = function (ts) {
-    return tsToSrt(ts);
+    return new Promise(resolve => {
+      const srt = tsToSrt(ts);
+      resolve(srt);
+    });
   };
 
   return srt_create;

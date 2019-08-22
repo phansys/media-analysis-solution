@@ -26,6 +26,7 @@ let video = require('./video');
 let steps = require('./steps');
 let elasticsearch = require('./elasticsearch');
 let collection = require('./collection');
+let srtConverter = require('./srt_create');
 const s3Bucket = process.env.S3_BUCKET;
 
 module.exports.respond = function(event, cb) {
@@ -199,6 +200,16 @@ module.exports.respond = function(event, cb) {
        }
        else if (event.lambda.service_name == 'elasticsearch'){
            elasticsearch.respond(event, function(err, data) {
+               if (err) {
+                   return cb(err, null);
+               }
+               else {
+                   return cb(null, data);
+               }
+           });
+       }
+       else if (event.lambda.service_name == 'srt'){
+           srtConverter.respond(event, function(err, data) {
                if (err) {
                    return cb(err, null);
                }
